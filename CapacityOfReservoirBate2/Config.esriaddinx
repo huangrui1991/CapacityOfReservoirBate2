@@ -21,8 +21,8 @@
         <Toolbar id="CapacityOfReservoirBate2_CRToolbar" caption="CRToolbar" showInitially="false">
           <Items>
             <Item refID="CapacityOfReservoirBate2_CreateDEM" />
-            <Tool refID="CapacityOfReservoirBate2_DrawInterestingRegion"  />
-            <Button refID="CapacityOfReservoirBate2_ComputeCapacity" separator="true"/>
+            <Tool refID="CapacityOfReservoirBate2_DrawInterestingRegion" />
+            <Button refID="CapacityOfReservoirBate2_ComputeCapacity" separator="true" />
           </Items>
         </Toolbar>
       </Toolbars>

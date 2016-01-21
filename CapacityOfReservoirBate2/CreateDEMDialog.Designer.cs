@@ -110,6 +110,7 @@
             this.CellSizeTextBox.Name = "CellSizeTextBox";
             this.CellSizeTextBox.Size = new System.Drawing.Size(384, 21);
             this.CellSizeTextBox.TabIndex = 9;
+            this.CellSizeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CellSizeTextBox_KeyPress);
             // 
             // CancelButton
             // 
@@ -119,6 +120,7 @@
             this.CancelButton.TabIndex = 10;
             this.CancelButton.Text = "取消";
             this.CancelButton.UseVisualStyleBackColor = true;
+            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // OKButton
             // 
@@ -128,6 +130,7 @@
             this.OKButton.TabIndex = 11;
             this.OKButton.Text = "确定";
             this.OKButton.UseVisualStyleBackColor = true;
+            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
             // 
             // InputFeatureComboBox
             // 

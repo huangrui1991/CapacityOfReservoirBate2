@@ -8,12 +8,21 @@ using System.Text;
 using System.Windows.Forms;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
+using Microsoft.Scripting.Hosting;
+using IronPython.Hosting;
 
 namespace CapacityOfReservoirBate2
 {
     public partial class CreateDEMDialog : Form
     {
         private IMap _Map = ArcMap.Document.FocusMap;
+        private IFeatureLayer _SelectedFeatureLyr;
+
+        public IFeatureLayer SelectedFeatureLyr
+        {
+            set { _SelectedFeatureLyr = value; }
+            get { return _SelectedFeatureLyr; }
+        }
 
         public CreateDEMDialog()
         {
@@ -48,8 +57,8 @@ namespace CapacityOfReservoirBate2
                 MessageBox.Show("啊！哦！获取图层失败咯！");
                 return;
             }
-            IFeatureLayer FeatureLyr = SelectedLyr as IFeatureLayer;
-            IFeatureClass FeatureCls = FeatureLyr.FeatureClass;
+            SelectedFeatureLyr = SelectedLyr as IFeatureLayer;
+            IFeatureClass FeatureCls = SelectedFeatureLyr.FeatureClass;
             IFields Fields = FeatureCls.Fields;
             int Count = Fields.FieldCount;
             for (int index = 0; index < Count; index++)
@@ -84,7 +93,28 @@ namespace CapacityOfReservoirBate2
             e.Handled = true;
         }
 
-        
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            this.Dispose(true);
+        }
 
+        private void CellSizeTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+                   
+        }
+
+        private void OKButton_Click(object sender, EventArgs e)
+        {
+            DEMCreater Creater = new DEMCreater(SelectedFeatureLyr.FeatureClass, this.HeightFieldComboBox.Text, this.OutputPathTextBox.Text,this.CellSizeTextBox.Text);
+            bool IsCreated = Creater.Start();
+            if(IsCreated)
+                Dispose(true);
+            
+        }
+                
     }
 }
