@@ -16,6 +16,7 @@ namespace CapacityOfReservoirBate2
         private string _FieldName;
         private string _WorkSpacePath;
         private string _CellSize;
+        
 
         public string CellSize
         {
@@ -41,6 +42,7 @@ namespace CapacityOfReservoirBate2
             set { _WorkSpacePath = value; }
         }
 
+        
 
         public DEMCreater(IFeatureClass SelectedFeatureCls,string HeightField,string WorkSpace,string CellSize)
         {
@@ -48,6 +50,7 @@ namespace CapacityOfReservoirBate2
             _FieldName = HeightField;
             _WorkSpacePath = WorkSpace;
             _CellSize = CellSize;
+            
         }
         public bool Start()
         {
@@ -58,6 +61,18 @@ namespace CapacityOfReservoirBate2
                     MessageBox.Show("Oop！没有找到图层哟！");
                     return false;
                 }
+
+                if (CellSize == "")
+                {
+                    MessageBox.Show("DEM 栅格大小不能为空！");
+                    return false;
+                }
+                if (WorkSpacePath == "")
+                {
+                    MessageBox.Show("输出DEM路径不能为空！");
+                    return false;
+                }
+                
                 //Create TIN
                 IFields Fields = FeatureCls.Fields;
                 int index = Fields.FindField(FieldName);
@@ -82,6 +97,7 @@ namespace CapacityOfReservoirBate2
                 TintoRaster.method = @"NATURAL_NEIGHBORS";
                 TintoRaster.data_type = "FLOAT";
                 GP.Execute(TintoRaster, null);
+                
                 return true;
                                 
             }

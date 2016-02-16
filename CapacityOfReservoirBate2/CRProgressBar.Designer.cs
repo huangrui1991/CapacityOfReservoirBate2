@@ -13,6 +13,7 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            ProgressBar.Value = 0;
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -28,8 +29,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.ProgressBar = new System.Windows.Forms.ProgressBar();
             this.ProgressBarLabel = new System.Windows.Forms.Label();
+            this.Timer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // ProgressBar
@@ -48,6 +51,10 @@
             this.ProgressBarLabel.TabIndex = 1;
             this.ProgressBarLabel.Text = "label1";
             // 
+            // Timer
+            // 
+            this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
+            // 
             // CRProgressBar
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -59,6 +66,7 @@
             this.MinimumSize = new System.Drawing.Size(402, 142);
             this.Name = "CRProgressBar";
             this.Text = "CRProgressBar";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CRProgressBar_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -66,7 +74,8 @@
 
         #endregion
 
-        private System.Windows.Forms.ProgressBar ProgressBar;
+        public System.Windows.Forms.ProgressBar ProgressBar;
         private System.Windows.Forms.Label ProgressBarLabel;
+        private System.Windows.Forms.Timer Timer;
     }
 }

@@ -15,8 +15,12 @@ namespace CapacityOfReservoirBate2
 {
     public partial class CreateDEMDialog : Form
     {
+
+
         private IMap _Map = ArcMap.Document.FocusMap;
         private IFeatureLayer _SelectedFeatureLyr;
+        private CRProgressBar _ProgressBar;
+        private DEMCreater _Creater;
 
         public IFeatureLayer SelectedFeatureLyr
         {
@@ -24,19 +28,41 @@ namespace CapacityOfReservoirBate2
             get { return _SelectedFeatureLyr; }
         }
 
+        public CRProgressBar ProgressBar
+        {
+            get { return _ProgressBar; }
+        }
+
+        public String HeightField
+        {
+            get { return HeightFieldComboBox.Text; }
+        }
+
+        public String OutputPath
+        {
+            get { return OutputPathTextBox.Text; }
+        }
+
+        public String CellSize
+        {
+            get { return CellSizeTextBox.Text; }
+        }
+
+
         public CreateDEMDialog()
         {
             InitializeComponent();
-            
+
             //init Input Feature Combobox
             IEnumLayer Lyrs = _Map.Layers;
             ILayer Lyr = Lyrs.Next();
             while (Lyr != null)
             {
-                if(Lyr is IFeatureLayer)
+                if (Lyr is IFeatureLayer)
                     this.InputFeatureComboBox.Items.Add(Lyr.Name);
                 Lyr = Lyrs.Next();
             }
+            _ProgressBar = new CRProgressBar("Compute Dem, Please wait!");
         }
 
         private void InputFeatureComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -63,7 +89,7 @@ namespace CapacityOfReservoirBate2
             int Count = Fields.FieldCount;
             for (int index = 0; index < Count; index++)
             {
-                  this.HeightFieldComboBox.Items.Add(Fields.get_Field(index).Name);
+                this.HeightFieldComboBox.Items.Add(Fields.get_Field(index).Name);
             }
 
         }
@@ -104,17 +130,49 @@ namespace CapacityOfReservoirBate2
             {
                 e.Handled = true;
             }
-                   
         }
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            DEMCreater Creater = new DEMCreater(SelectedFeatureLyr.FeatureClass, this.HeightFieldComboBox.Text, this.OutputPathTextBox.Text,this.CellSizeTextBox.Text);
-            bool IsCreated = Creater.Start();
-            if(IsCreated)
+            try
+            {
+
+                _Creater = new DEMCreater(SelectedFeatureLyr.FeatureClass, HeightField, OutputPath, CellSize);
+                System.Threading.Thread CreateDEMThread = new System.Threading.Thread(new System.Threading.ThreadStart(ShowProgressbar));
+                CreateDEMThread.Start();
+                ProgressBar.ShowDialog();
+
                 Dispose(true);
-            
+
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show(E.Message);
+            }
+
+            //Start();
+
         }
-                
+
+        private void ShowProgressbar()
+        {
+            //
+            try
+            {
+                bool IsCreated = _Creater.Start();
+
+                //ProgressBar.ProgressBar.Value = 1000;
+                ProgressBar.Dispose();
+
+                //ProgressBar.Dispose();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+            //ProgressBar.Dispose();
+        }
+
     }
 }

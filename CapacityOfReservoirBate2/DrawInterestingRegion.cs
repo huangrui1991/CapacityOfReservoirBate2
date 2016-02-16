@@ -5,9 +5,9 @@ using System.IO;
 
 namespace CapacityOfReservoirBate2
 {
-    public class DrawInterestingRegion : ESRI.ArcGIS.Desktop.AddIns.Tool
+    public class DrawDAM : ESRI.ArcGIS.Desktop.AddIns.Tool
     {
-        public DrawInterestingRegion()
+        public DrawDAM()
         {
         }
 

@@ -6,7 +6,7 @@
   <Image>Images\CapacityOfReservoirBate2.png</Image>
   <Author>HR</Author>
   <Company></Company>
-  <Date>2016/1/19</Date>
+  <Date>2016/2/16</Date>
   <Targets>
     <Target name="Desktop" version="10.0" />
   </Targets>
@@ -14,15 +14,15 @@
     <ArcMap>
       <Commands>
         <Button id="CapacityOfReservoirBate2_CreateDEM" class="CreateDEM" message="CreateDEM" caption="CreateDEM" tip="CreateDEM" category="CreateDEM" image="Images\CreateDEM.png" />
-        <Tool id="CapacityOfReservoirBate2_DrawInterestingRegion" class="DrawInterestingRegion" message="Draw Interesting Region" caption="DrawInterestingRegion" tip="Draw Interesting Region" category="DrawInterestingRegion" image="Images\Tool1.png" cursor="Images\Tool1.cur" />
+        <Tool id="CapacityOfReservoirBate2_DrawDAM" class="DrawDAM" message="Draw DAM" caption="DrawDAM" tip="Draw DAM" category="DrawDAM" image="Images\Tool1.png" cursor="Images\Tool1.cur" />
         <Button id="CapacityOfReservoirBate2_ComputeCapacity" class="ComputeCapacity" message="ComputeCapacity" caption="ComputeCapacity" tip="ComputeCapacity" category="ComputeCapacity" image="Images\ComputeCapacity.png" />
       </Commands>
       <Toolbars>
-        <Toolbar id="CapacityOfReservoirBate2_CRToolbar" caption="CRToolbar" showInitially="false">
+        <Toolbar id="CapacityOfReservoirBate2_CreateCapacityToolbar" caption="CreateCapacityToolbar" showInitially="true">
           <Items>
-            <Item refID="CapacityOfReservoirBate2_CreateDEM" />
-            <Tool refID="CapacityOfReservoirBate2_DrawInterestingRegion" />
-            <Button refID="CapacityOfReservoirBate2_ComputeCapacity" separator="true" />
+            <Button refID="CapacityOfReservoirBate2_CreateDEM" />
+            <Tool refID="CapacityOfReservoirBate2_DrawDAM" />
+            <Button refID="CapacityOfReservoirBate2_ComputeCapacity" />
           </Items>
         </Toolbar>
       </Toolbars>
