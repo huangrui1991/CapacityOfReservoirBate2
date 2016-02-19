@@ -71,6 +71,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ESRI.ArcGIS.DataSourcesRaster, Version=10.0.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="ESRI.ArcGIS.Desktop.AddIns">
       <Private>False</Private>
     </Reference>
@@ -84,6 +87,9 @@
     </Reference>
     <Reference Include="ESRI.ArcGIS.Framework">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="ESRI.ArcGIS.GeoAnalyst, Version=10.0.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="ESRI.ArcGIS.Geodatabase, Version=10.0.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -100,6 +106,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="ESRI.ArcGIS.Geoprocessor, Version=10.0.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86" />
+    <Reference Include="ESRI.ArcGIS.SpatialAnalyst, Version=10.0.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="ESRI.ArcGIS.System">
       <Private>False</Private>
     </Reference>
@@ -144,6 +153,12 @@
     <Compile Include="CreateDEMDialog.Designer.cs">
       <DependentUpon>CreateDEMDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="CreateWatershedDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateWatershedDialog.Designer.cs">
+      <DependentUpon>CreateWatershedDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="CRProgressBar.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -152,7 +167,9 @@
     </Compile>
     <Compile Include="DEMCreater.cs" />
     <Compile Include="FolderDialog.cs" />
+    <Compile Include="ICreater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WatershedCreater.cs" />
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Config.esriaddinx">
@@ -171,7 +188,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DrawInterestingRegion.cs" />
+    <Compile Include="DrawDAM.cs" />
     <AddInContent Include="Images\Tool1.png;Images\Tool1.cur" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +220,9 @@
     <EmbeddedResource Include="CreateDEMDialog.resx">
       <DependentUpon>CreateDEMDialog.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateWatershedDialog.resx">
+      <DependentUpon>CreateWatershedDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CRProgressBar.resx">
       <DependentUpon>CRProgressBar.cs</DependentUpon>

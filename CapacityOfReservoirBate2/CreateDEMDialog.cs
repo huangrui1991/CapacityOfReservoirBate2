@@ -31,6 +31,7 @@ namespace CapacityOfReservoirBate2
         public CRProgressBar ProgressBar
         {
             get { return _ProgressBar; }
+            set { _ProgressBar = value; }
         }
 
         public String HeightField
@@ -62,7 +63,7 @@ namespace CapacityOfReservoirBate2
                     this.InputFeatureComboBox.Items.Add(Lyr.Name);
                 Lyr = Lyrs.Next();
             }
-            _ProgressBar = new CRProgressBar("Compute Dem, Please wait!");
+            
         }
 
         private void InputFeatureComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -140,10 +141,8 @@ namespace CapacityOfReservoirBate2
                 _Creater = new DEMCreater(SelectedFeatureLyr.FeatureClass, HeightField, OutputPath, CellSize);
                 System.Threading.Thread CreateDEMThread = new System.Threading.Thread(new System.Threading.ThreadStart(ShowProgressbar));
                 CreateDEMThread.Start();
-                ProgressBar.ShowDialog();
-
-                Dispose(true);
-
+                ProgressBar = new CRProgressBar("Compute Dem, Please wait!",CreateDEMThread);
+                ProgressBar.Show();                             
             }
             catch (Exception E)
             {
@@ -163,6 +162,7 @@ namespace CapacityOfReservoirBate2
 
                 //ProgressBar.ProgressBar.Value = 1000;
                 ProgressBar.Dispose();
+                //Dispose(true);
 
                 //ProgressBar.Dispose();
             }

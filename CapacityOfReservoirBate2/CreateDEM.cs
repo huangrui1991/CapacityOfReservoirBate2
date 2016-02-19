@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Windows.Forms;
 
 namespace CapacityOfReservoirBate2
 {
@@ -22,7 +23,7 @@ namespace CapacityOfReservoirBate2
             //
             ArcMap.Application.CurrentTool = null;
             dialog = new CreateDEMDialog();
-            dialog.ShowDialog();
+            dialog.Show();
         }
         protected override void OnUpdate()
         {
