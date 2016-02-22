@@ -126,48 +126,37 @@ namespace CapacityOfReservoirBate2
         {
             try
             {
-                Intersect IntersectTool = new Intersect();
-
                 //init in_Feature
                 if (StreamNetLayer == null)
                 {
                     MessageBox.Show("河网图层为空！");
-                    DamPoint = null;
+                    //DamPoint = null;
                     return ;
                 }
                 if (DamLayer == null)
                 {
                     MessageBox.Show("大坝图层为空！");
-                    DamPoint = null;
+                    //DamPoint = null;
                     return ;
                 }
-                IFeatureLayer StrNetFeatureLyr = StreamNetLayer as IFeatureLayer;
-                //IFeatureClass StrNetFeatureCls = StrNetFeatureLyr.FeatureClass;
-                List<ILayer> InFeatures = new List<ILayer>();
-                InFeatures.Add(StreamNetLayer);
-                InFeatures.Add(DamLayer);
+                
 
-                IntersectTool.in_features = StreamNetLayer.Name + ";" + DamLayer.Name;
-                IntersectTool.out_feature_class = WorkSpacePath + @"/DamPoint";
-                IntersectTool.join_attributes = "All";
-                IntersectTool.output_type = "POINT";
-
-                Geoprocessor GP = new Geoprocessor();
-                IGeoProcessorResult results = (IGeoProcessorResult)GP.Execute(IntersectTool, null);
+                IGeoProcessorResult results = Intersect(StreamNetLayer.Name, DamLayer.Name, WorkSpacePath + @"/DamPoint", "All", "POINT");
                 if (results.Status != esriJobStatus.esriJobSucceeded)
                 {
                     MessageBox.Show("获取大坝位置失败！");
                     return ;
                 }
-                ILayer DamPointLayer = GetLayerByName("DamPoint");
-                IFeatureLayer DamPointFeatureLyr = DamPointLayer as IFeatureLayer;
-                IFeatureClass DamPointFeatureClass = DamPointFeatureLyr.FeatureClass;
-                DamPoint = DamPointFeatureClass.GetFeature(0);
+
+                //ILayer DamPointLayer = GetLayerByName("DamPoint");
+                //IFeatureLayer DamPointFeatureLyr = DamPointLayer as IFeatureLayer;
+                //IFeatureClass DamPointFeatureClass = DamPointFeatureLyr.FeatureClass;
+                //DamPoint = DamPointFeatureClass.GetFeature(0);
                 
-                if (DamPoint == null)
-                {
-                    MessageBox.Show("获取大坝位置失败！");
-                }
+                //if (DamPoint == null)
+                //{
+                //    MessageBox.Show("获取大坝位置失败！");
+                //}
 
             }
             catch (Exception e)
@@ -178,6 +167,23 @@ namespace CapacityOfReservoirBate2
             
         }
 
+        private IGeoProcessorResult Intersect(String FirstLayerName, String SecondLayerName,String OutFeatureClass,String JoinAttribute,String OutputType)
+        {
+            Intersect IntersectTool = new Intersect();
+            IntersectTool.in_features = FirstLayerName + ";" + SecondLayerName;
+            IntersectTool.out_feature_class = OutFeatureClass;
+            IntersectTool.join_attributes = JoinAttribute;
+            IntersectTool.output_type = OutputType;
+
+            Geoprocessor GP = new Geoprocessor();
+            IGeoProcessorResult results = (IGeoProcessorResult)GP.Execute(IntersectTool, null);
+            return results;
+
+        }
+        private void SelectStream()
+        {
+            
+        }
         private ILayer GetLayerByName(string Name)
         {
             IEnumLayer Lyrs = ArcMap.Document.FocusMap.get_Layers();
@@ -192,6 +198,7 @@ namespace CapacityOfReservoirBate2
             return Lyr;
         }
 
+        
         public override bool Start()
         {
             GetDamPoint();
