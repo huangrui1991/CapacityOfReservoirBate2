@@ -162,6 +162,7 @@
             this.MinimumSize = new System.Drawing.Size(470, 400);
             this.Name = "CreateDEMDialog";
             this.Text = "CreateDEMDialog";
+            this.Load += new System.EventHandler(this.CreateDEMDialog_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

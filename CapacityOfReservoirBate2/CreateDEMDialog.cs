@@ -55,14 +55,7 @@ namespace CapacityOfReservoirBate2
             InitializeComponent();
 
             //init Input Feature Combobox
-            IEnumLayer Lyrs = _Map.Layers;
-            ILayer Lyr = Lyrs.Next();
-            while (Lyr != null)
-            {
-                if (Lyr is IFeatureLayer)
-                    this.InputFeatureComboBox.Items.Add(Lyr.Name);
-                Lyr = Lyrs.Next();
-            }
+            
             
         }
 
@@ -172,6 +165,18 @@ namespace CapacityOfReservoirBate2
             }
 
             //ProgressBar.Dispose();
+        }
+
+        private void CreateDEMDialog_Load(object sender, EventArgs e)
+        {
+            IEnumLayer Lyrs = _Map.Layers;
+            ILayer Lyr = Lyrs.Next();
+            while (Lyr != null)
+            {
+                if (Lyr is IFeatureLayer)
+                    this.InputFeatureComboBox.Items.Add(Lyr.Name);
+                Lyr = Lyrs.Next();
+            }
         }
 
     }

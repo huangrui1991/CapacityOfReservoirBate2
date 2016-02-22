@@ -76,7 +76,6 @@
             this.InputStreamRasterComboBox.Name = "InputStreamRasterComboBox";
             this.InputStreamRasterComboBox.Size = new System.Drawing.Size(331, 20);
             this.InputStreamRasterComboBox.TabIndex = 3;
-            this.InputStreamRasterComboBox.Click += new System.EventHandler(this.InputStreamRasterComboBox_Click);
             // 
             // InputFlowDirRasterLabel
             // 

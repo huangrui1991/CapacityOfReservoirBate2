@@ -9,14 +9,14 @@ namespace CapacityOfReservoirBate2
 {
     public class DrawDAM : ESRI.ArcGIS.Desktop.AddIns.Tool
     {
-        CreateWatershedDialog _Dialog;
+        VolumeComputerDialog _Dialog;
         private INewLineFeedback _LineFeedback = null;
         private bool _IsMouseDown = false;
         private IPoint _CurrentPoint = null;
         private IPolyline Dam = null;
 
 
-        public CreateWatershedDialog Dialog
+        public VolumeComputerDialog Dialog
         {
             set { _Dialog = value; }
             get { return _Dialog; }
@@ -24,7 +24,7 @@ namespace CapacityOfReservoirBate2
 
         public DrawDAM()
         {
-            Dialog = new CreateWatershedDialog();
+            Dialog = new VolumeComputerDialog();
         }
 
         protected override void OnUpdate()
@@ -75,6 +75,10 @@ namespace CapacityOfReservoirBate2
 
             _LineFeedback = null;
             _IsMouseDown = false;
+
+            
+
+            Dialog.Show();
         }
 
     }
