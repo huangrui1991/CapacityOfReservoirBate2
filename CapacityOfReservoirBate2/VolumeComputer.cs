@@ -23,26 +23,39 @@ namespace CapacityOfReservoirBate2
         private IPolyline _Line;
         private ILayer _DamLayer;
         private String _WorkSpacePath;
-        private IFeature _DamPoint = null;
+        private IFeature _DamPointFeature = null;
+        private List<IFeature> _StreamList = new List<IFeature>();
 
 
         #region Properties
 
-        public IFeature DamPoint
+        public List<IFeature> StreamList
         {
             get
             {
-                return _DamPoint;
+                return _StreamList;
             }
             set
             {
-                _DamPoint = value;
+                _StreamList = value;
+            }
+        }
+
+        public IFeature DamPointFeature
+        {
+            get
+            {
+                return _DamPointFeature;
+            }
+            set
+            {
+                _DamPointFeature = value;
             }
         }
 
         public String WorkSpacePath
         {
-            get 
+            get
             {
                 return _WorkSpacePath;
             }
@@ -115,9 +128,9 @@ namespace CapacityOfReservoirBate2
         #endregion
 
 
-        public VolumeComputer(String DamLyrName,String StreamNetLyrName,String WorkSpacePath)
+        public VolumeComputer(String DamLyrName, String StreamNetLyrName, String WorkSpacePath)
         {
-            _DamLayer = GetLayerByName(DamLyrName) ;
+            _DamLayer = GetLayerByName(DamLyrName);
             _StreamNetLayer = GetLayerByName(StreamNetLyrName);
             _WorkSpacePath = WorkSpacePath;
         }
@@ -131,32 +144,37 @@ namespace CapacityOfReservoirBate2
                 {
                     MessageBox.Show("河网图层为空！");
                     //DamPoint = null;
-                    return ;
+                    return;
                 }
                 if (DamLayer == null)
                 {
                     MessageBox.Show("大坝图层为空！");
                     //DamPoint = null;
-                    return ;
+                    return;
                 }
-                
+
 
                 IGeoProcessorResult results = Intersect(StreamNetLayer.Name, DamLayer.Name, WorkSpacePath + @"/DamPoint", "All", "POINT");
                 if (results.Status != esriJobStatus.esriJobSucceeded)
                 {
                     MessageBox.Show("获取大坝位置失败！");
-                    return ;
+                    return;
                 }
 
-                //ILayer DamPointLayer = GetLayerByName("DamPoint");
-                //IFeatureLayer DamPointFeatureLyr = DamPointLayer as IFeatureLayer;
-                //IFeatureClass DamPointFeatureClass = DamPointFeatureLyr.FeatureClass;
-                //DamPoint = DamPointFeatureClass.GetFeature(0);
-                
-                //if (DamPoint == null)
-                //{
-                //    MessageBox.Show("获取大坝位置失败！");
-                //}
+                ILayer DamPointLayer = GetLayerByName("DamPoint");
+                IFeatureLayer DamPointFeatureLyr = DamPointLayer as IFeatureLayer;
+                IFeatureClass DamPointFeatureClass = DamPointFeatureLyr.FeatureClass;
+                DamPointFeature = DamPointFeatureClass.GetFeature(0);
+                //IGeometry DamPointGeometry = DamPointFeature.Shape;
+                //IPoint DamPoint = new PointClass();
+                //IGeometry tempCol = (IGeometry)DamPoint;
+                //tempCol=(DamPointGeometry);
+                //DamPoint. = (IPoint)tempCol;
+
+                if (DamPointFeature == null)
+                {
+                    MessageBox.Show("获取大坝位置失败！");
+                }
 
             }
             catch (Exception e)
@@ -164,10 +182,42 @@ namespace CapacityOfReservoirBate2
                 MessageBox.Show(e.Message);
             }
 
-            
         }
 
-        private IGeoProcessorResult Intersect(String FirstLayerName, String SecondLayerName,String OutFeatureClass,String JoinAttribute,String OutputType)
+        private bool SelectStream()
+        {
+            //find first stream line
+            IFeatureLayer StreamNetFeatureLayer = StreamNetLayer as IFeatureLayer;
+            IFeatureClass StreamNetFeatureClass = StreamNetFeatureLayer.FeatureClass;
+            ISpatialFilter SpatialFilter = new SpatialFilterClass();
+            SpatialFilter.Geometry = DamPointFeature.Extent;
+            SpatialFilter.SpatialRel = ESRI.ArcGIS.Geodatabase.esriSpatialRelEnum.esriSpatialRelEnvelopeIntersects;
+            SpatialFilter.set_OutputSpatialReference("SpatialReference", ArcMap.Document.ActiveView.FocusMap.SpatialReference);
+
+            IFeatureCursor Cursor = StreamNetFeatureClass.Search(SpatialFilter, false);
+            IFeature FirstStreamFeature = Cursor.NextFeature();
+            if (FirstStreamFeature == null)
+            {
+                MessageBox.Show("feature == null");
+                return false;
+            }
+
+            //get FirstStreamFromNode
+            GetStreamList(FirstStreamFeature);
+            foreach (IFeature Feature in StreamList)
+            {
+                MessageBox.Show(Feature.OID.ToString());
+            }
+            
+
+
+            return true;
+
+
+        }
+
+
+        private IGeoProcessorResult Intersect(String FirstLayerName, String SecondLayerName, String OutFeatureClass, String JoinAttribute, String OutputType)
         {
             Intersect IntersectTool = new Intersect();
             IntersectTool.in_features = FirstLayerName + ";" + SecondLayerName;
@@ -180,10 +230,7 @@ namespace CapacityOfReservoirBate2
             return results;
 
         }
-        private void SelectStream()
-        {
-            
-        }
+
         private ILayer GetLayerByName(string Name)
         {
             IEnumLayer Lyrs = ArcMap.Document.FocusMap.get_Layers();
@@ -198,10 +245,71 @@ namespace CapacityOfReservoirBate2
             return Lyr;
         }
 
-        
+        private void GetStreamList(IFeature StartFeature)
+        {
+            try
+            {
+                if (StartFeature == null)
+                {
+                    MessageBox.Show("StartFeature is null!");
+                    return;
+                }
+                List<IFeature> PartialStreamList = new List<IFeature>();
+                //StreamList.Add(StartFeature);
+
+                IFields ToStreamFields = StartFeature.Fields;
+                int from_node_index = ToStreamFields.FindField("from_node");
+                string FirstStreamFromNode = StartFeature.get_Value(from_node_index).ToString();
+
+                IFeatureLayer StreamNetFeatureLayer = StreamNetLayer as IFeatureLayer;
+                IFeatureClass StreamNetFeatureClass = StreamNetFeatureLayer.FeatureClass;
+                IQueryFilter Filter = new QueryFilterClass();
+                Filter.WhereClause = "to_node=" +  long.Parse(FirstStreamFromNode);
+                IFeatureCursor Cursor = StreamNetFeatureClass.Search(Filter, false);
+                IFeature TargetFeature = Cursor.NextFeature();
+                if (TargetFeature == null)
+                    return;
+                IFields Fields = TargetFeature.Fields;
+                int to_node_index = Fields.FindField("to_node");
+                String ToNode = TargetFeature.get_Value(to_node_index).ToString();
+
+                while (ToNode == FirstStreamFromNode)
+                {
+                    PartialStreamList.Add(TargetFeature);
+                    TargetFeature = Cursor.NextFeature();
+                    if (TargetFeature == null)
+                        break;
+                    Fields = TargetFeature.Fields;
+                    to_node_index = Fields.FindField("to_node");
+                    ToNode = TargetFeature.get_Value(to_node_index).ToString();
+                }
+                foreach (IFeature Feature in PartialStreamList)
+                {
+                    StreamList.Add(Feature);
+                }
+
+                if (PartialStreamList.Count == 0)
+                    return;
+                else
+                {
+                    foreach (IFeature Feature in PartialStreamList)
+                    {
+                        GetStreamList(Feature);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            
+        }
+
+
         public override bool Start()
         {
             GetDamPoint();
+            SelectStream();
             return true;
         }
 
