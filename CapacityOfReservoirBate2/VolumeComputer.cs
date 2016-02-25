@@ -25,9 +25,16 @@ namespace CapacityOfReservoirBate2
         private String _WorkSpacePath;
         private IFeature _DamPointFeature = null;
         private List<IFeature> _StreamList = new List<IFeature>();
+        private HashSet<IFeature> _WatershedPolygonList = new HashSet<IFeature>();
 
 
         #region Properties
+
+        public HashSet<IFeature> WatershedPolygonList
+        {
+            get { return _WatershedPolygonList; }
+            set { _WatershedPolygonList = value; }
+        }
 
         public List<IFeature> StreamList
         {
@@ -128,10 +135,11 @@ namespace CapacityOfReservoirBate2
         #endregion
 
 
-        public VolumeComputer(String DamLyrName, String StreamNetLyrName, String WorkSpacePath)
+        public VolumeComputer(String DamLyrName, String StreamNetLyrName, String WatershedLyrName,String WorkSpacePath)
         {
             _DamLayer = GetLayerByName(DamLyrName);
             _StreamNetLayer = GetLayerByName(StreamNetLyrName);
+            _WatershedLayer = GetLayerByName(WatershedLyrName);
             _WorkSpacePath = WorkSpacePath;
         }
 
@@ -204,18 +212,36 @@ namespace CapacityOfReservoirBate2
 
             //get FirstStreamFromNode
             GetStreamList(FirstStreamFeature);
-            foreach (IFeature Feature in StreamList)
-            {
-                MessageBox.Show(Feature.OID.ToString());
-            }
-            
-
-
+             
             return true;
 
 
         }
 
+        private void GetWatershedPolygon(IFeatureClass WatershedFeatureClass)
+        {
+            foreach (IFeature StreamFeature in StreamList)
+            {
+                ISpatialFilter Filter = new SpatialFilterClass();
+                Filter.Geometry = StreamFeature.Shape;
+                Filter.SpatialRel = esriSpatialRelEnum.esriSpatialRelCrosses;
+                Filter.set_OutputSpatialReference("SpatialReference", ArcMap.Document.ActiveView.FocusMap.SpatialReference);
+
+                IFeatureCursor Cursor = WatershedFeatureClass.Search(Filter, false);
+                IFeature WatershedFeature = Cursor.NextFeature();
+                while (WatershedFeature != null)
+                {
+                    WatershedPolygonList.Add(WatershedFeature);
+                    WatershedFeature = Cursor.NextFeature();
+                }
+            }
+
+            foreach (IFeature StreamFeature in WatershedPolygonList)
+            {
+                ArcMap.Document.ActiveView.FocusMap.SelectFeature(WatershedLayer, StreamFeature);
+            }
+            
+        }
 
         private IGeoProcessorResult Intersect(String FirstLayerName, String SecondLayerName, String OutFeatureClass, String JoinAttribute, String OutputType)
         {
@@ -304,12 +330,12 @@ namespace CapacityOfReservoirBate2
             }
             
         }
-
-
+                
         public override bool Start()
         {
             GetDamPoint();
             SelectStream();
+            GetWatershedPolygon((WatershedLayer as IFeatureLayer).FeatureClass);
             return true;
         }
 

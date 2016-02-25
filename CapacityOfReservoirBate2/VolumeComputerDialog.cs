@@ -29,11 +29,11 @@ namespace CapacityOfReservoirBate2
                     {
                         this.DamLyrComboBox.Items.Add(Lyr.Name);
                         this.StreamNetLyrComboBox.Items.Add(Lyr.Name);
+                        this.WatershedPolygonComboBox.Items.Add(Lyr.Name);
                     }
 
                     Lyr = Lyrs.Next();
                 }
-                
             }
             catch (Exception e)
             {
@@ -48,7 +48,7 @@ namespace CapacityOfReservoirBate2
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            Creater = new VolumeComputer(this.DamLyrComboBox.Text,this.StreamNetLyrComboBox.Text,this.WorkSpacePathTextBox.Text);
+            Creater = new VolumeComputer(this.DamLyrComboBox.Text,this.StreamNetLyrComboBox.Text,this.WatershedPolygonComboBox.Text,this.WorkSpacePathTextBox.Text);
             Creater.Start();
         }
 

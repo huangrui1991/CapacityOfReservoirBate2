@@ -37,6 +37,8 @@
             this.WorkSpacePathLabel = new System.Windows.Forms.Label();
             this.WorkSpacePathTextBox = new System.Windows.Forms.TextBox();
             this.BrowseButton = new System.Windows.Forms.Button();
+            this.WatershedPolygonLabel = new System.Windows.Forms.Label();
+            this.WatershedPolygonComboBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // StreamNetLyrLabel
@@ -59,7 +61,7 @@
             // DamLyrLabel
             // 
             this.DamLyrLabel.AutoSize = true;
-            this.DamLyrLabel.Location = new System.Drawing.Point(26, 167);
+            this.DamLyrLabel.Location = new System.Drawing.Point(28, 214);
             this.DamLyrLabel.Name = "DamLyrLabel";
             this.DamLyrLabel.Size = new System.Drawing.Size(29, 12);
             this.DamLyrLabel.TabIndex = 2;
@@ -68,7 +70,7 @@
             // DamLyrComboBox
             // 
             this.DamLyrComboBox.FormattingEnabled = true;
-            this.DamLyrComboBox.Location = new System.Drawing.Point(28, 203);
+            this.DamLyrComboBox.Location = new System.Drawing.Point(28, 244);
             this.DamLyrComboBox.Name = "DamLyrComboBox";
             this.DamLyrComboBox.Size = new System.Drawing.Size(412, 20);
             this.DamLyrComboBox.TabIndex = 3;
@@ -103,14 +105,14 @@
             // 
             // WorkSpacePathTextBox
             // 
-            this.WorkSpacePathTextBox.Location = new System.Drawing.Point(28, 129);
+            this.WorkSpacePathTextBox.Location = new System.Drawing.Point(28, 115);
             this.WorkSpacePathTextBox.Name = "WorkSpacePathTextBox";
             this.WorkSpacePathTextBox.Size = new System.Drawing.Size(331, 21);
             this.WorkSpacePathTextBox.TabIndex = 7;
             // 
             // BrowseButton
             // 
-            this.BrowseButton.Location = new System.Drawing.Point(365, 129);
+            this.BrowseButton.Location = new System.Drawing.Point(365, 115);
             this.BrowseButton.Name = "BrowseButton";
             this.BrowseButton.Size = new System.Drawing.Size(75, 23);
             this.BrowseButton.TabIndex = 8;
@@ -118,11 +120,30 @@
             this.BrowseButton.UseVisualStyleBackColor = true;
             this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
+            // WatershedPolygonLabel
+            // 
+            this.WatershedPolygonLabel.AutoSize = true;
+            this.WatershedPolygonLabel.Location = new System.Drawing.Point(28, 154);
+            this.WatershedPolygonLabel.Name = "WatershedPolygonLabel";
+            this.WatershedPolygonLabel.Size = new System.Drawing.Size(41, 12);
+            this.WatershedPolygonLabel.TabIndex = 9;
+            this.WatershedPolygonLabel.Text = "汇水区";
+            // 
+            // WatershedPolygonComboBox
+            // 
+            this.WatershedPolygonComboBox.FormattingEnabled = true;
+            this.WatershedPolygonComboBox.Location = new System.Drawing.Point(28, 179);
+            this.WatershedPolygonComboBox.Name = "WatershedPolygonComboBox";
+            this.WatershedPolygonComboBox.Size = new System.Drawing.Size(412, 20);
+            this.WatershedPolygonComboBox.TabIndex = 10;
+            // 
             // VolumeComputerDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(454, 361);
+            this.Controls.Add(this.WatershedPolygonComboBox);
+            this.Controls.Add(this.WatershedPolygonLabel);
             this.Controls.Add(this.BrowseButton);
             this.Controls.Add(this.WorkSpacePathTextBox);
             this.Controls.Add(this.WorkSpacePathLabel);
@@ -153,5 +174,7 @@
         private System.Windows.Forms.Label WorkSpacePathLabel;
         private System.Windows.Forms.TextBox WorkSpacePathTextBox;
         private System.Windows.Forms.Button BrowseButton;
+        private System.Windows.Forms.Label WatershedPolygonLabel;
+        private System.Windows.Forms.ComboBox WatershedPolygonComboBox;
     }
 }
