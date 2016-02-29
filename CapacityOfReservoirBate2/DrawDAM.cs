@@ -4,6 +4,12 @@ using System.Text;
 using System.IO;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
+using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.TrackingAnalyst;
+using ESRI.ArcGIS.DataSourcesFile;
+using ESRI.ArcGIS.DataSourcesGDB;
+using ESRI.ArcGIS.esriSystem;
 
 namespace CapacityOfReservoirBate2
 {
@@ -71,7 +77,19 @@ namespace CapacityOfReservoirBate2
                 line = _LineFeedback.Stop();
 
             if (line != null)
+            {
                 Dam = line;
+                IWorkspaceFactory WorkspaceFactory = new InMemoryWorkspaceFactory();
+                IWorkspaceName workspaceName = WorkspaceFactory.Create(null, "DamWorkspace", null, 0);
+                IName name = (IName)workspaceName;
+
+                // Open the workspace through the name object.
+                IFeatureWorkspace Workspace = (IFeatureWorkspace)name.Open();
+                UID CLSID = new ESRI.ArcGIS.esriSystem.UIDClass();
+                CLSID.Value = "esriGeoDatabase.Feature";
+
+                //IFeatureClass DamFeatureClass = Workspace.CreateFeatureClass("Dam",null,CLSID)
+            }
 
             _LineFeedback = null;
             _IsMouseDown = false;
@@ -81,6 +99,54 @@ namespace CapacityOfReservoirBate2
             Dialog.Show();
         }
 
+        private void AddTemporalLayer(IFeatureClass featureClass, string eventFieldName, string temporalFieldName)
+        {
+            ITemporalLayer temporalFeatureLayer = new TemporalFeatureLayerClass();
+            IFeatureLayer2 featureLayer = temporalFeatureLayer as IFeatureLayer2;
+            ILayer layer = temporalFeatureLayer as ILayer;
+            ITemporalRenderer temporalRenderer = new CoTrackSymbologyRendererClass();
+            ITemporalRenderer2 temporalRenderer2 = (ITemporalRenderer2)temporalRenderer;
+            IFeatureRenderer featureRenderer = temporalRenderer as IFeatureRenderer;
+            ITrackSymbologyRenderer trackRenderer = temporalRenderer as ITrackSymbologyRenderer;
+
+            if (featureLayer != null)
+            {
+                featureLayer.FeatureClass = featureClass;
+            }
+
+            if (featureRenderer != null)
+            {
+                temporalRenderer.TemporalObjectColumnName = eventFieldName;
+                temporalRenderer.TemporalFieldName = temporalFieldName;
+                temporalFeatureLayer.Renderer = featureRenderer;
+            }
+
+            if (trackRenderer != null)
+            {
+                //Create green color value
+                IRgbColor rgbColor = new RgbColorClass();
+                rgbColor.RGB = 0x00FF00;
+
+                //Create simple thin green line 
+                ISimpleLineSymbol simpleLineSymbol = new SimpleLineSymbolClass();
+                simpleLineSymbol.Color = (IColor)rgbColor;
+                simpleLineSymbol.Width = 1.0;
+
+                //Create simple renderer using line symbol
+                ISimpleRenderer simpleRenderer = new SimpleRendererClass();
+                simpleRenderer.Symbol = (ISymbol)simpleLineSymbol;
+
+                //Apply line renderer as track symbol and enable track rendering
+                trackRenderer.TrackSymbologyRenderer = (IFeatureRenderer)simpleRenderer;
+                trackRenderer.ShowTrackSymbologyLegendGroup = true;
+                temporalRenderer2.TrackRendererEnabled = true;
+            }
+
+            if (layer != null)
+            {
+                ArcMap.Document.FocusMap.AddLayer(layer);
+            }
+        }
     }
 
 }

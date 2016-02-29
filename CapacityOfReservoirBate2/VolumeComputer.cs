@@ -236,10 +236,12 @@ namespace CapacityOfReservoirBate2
                 }
             }
 
-            foreach (IFeature StreamFeature in WatershedPolygonList)
+            foreach (IFeature WatershedFeature in WatershedPolygonList)
             {
-                ArcMap.Document.ActiveView.FocusMap.SelectFeature(WatershedLayer, StreamFeature);
+                ArcMap.Document.ActiveView.FocusMap.SelectFeature(WatershedLayer, WatershedFeature);
             }
+
+
             
         }
 
@@ -322,6 +324,11 @@ namespace CapacityOfReservoirBate2
                     {
                         GetStreamList(Feature);
                     }
+                }
+
+                foreach (IFeature StreamFeature in StreamList)
+                {
+                    ArcMap.Document.ActiveView.FocusMap.SelectFeature(WatershedLayer, StreamFeature);
                 }
             }
             catch (Exception e)
