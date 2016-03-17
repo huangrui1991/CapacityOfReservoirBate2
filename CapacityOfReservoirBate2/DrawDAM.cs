@@ -47,6 +47,12 @@ namespace CapacityOfReservoirBate2
             base.OnActivate();
         }
 
+        protected override bool OnDeactivate()
+        {
+            _Count = 0;
+            return base.OnDeactivate();
+        }
+
         protected override void OnMouseDown(ESRI.ArcGIS.Desktop.AddIns.Tool.MouseEventArgs arg)
         {
             if (_LineFeedback == null)
@@ -80,6 +86,7 @@ namespace CapacityOfReservoirBate2
                 if (_Count > 0)
                 {
                     ArcMap.Document.ActiveView.Refresh();
+                    _LineFeedback = null;
                     return;
                 }
                     
@@ -158,7 +165,7 @@ namespace CapacityOfReservoirBate2
 
                 Dialog = new VolumeComputerDialog();
                 Dialog.Show();
-
+                
                 _Count++;
             }
             catch (Exception e)

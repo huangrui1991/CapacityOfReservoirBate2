@@ -241,8 +241,6 @@ namespace CapacityOfReservoirBate2
                 ArcMap.Document.ActiveView.FocusMap.SelectFeature(WatershedLayer, WatershedFeature);
             }
 
-
-            
         }
 
         private IGeoProcessorResult Intersect(String FirstLayerName, String SecondLayerName, String OutFeatureClass, String JoinAttribute, String OutputType)

@@ -30,8 +30,6 @@
         {
             this.StreamNetLyrLabel = new System.Windows.Forms.Label();
             this.StreamNetLyrComboBox = new System.Windows.Forms.ComboBox();
-            this.DamLyrLabel = new System.Windows.Forms.Label();
-            this.DamLyrComboBox = new System.Windows.Forms.ComboBox();
             this.OKButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
             this.WorkSpacePathLabel = new System.Windows.Forms.Label();
@@ -58,23 +56,6 @@
             this.StreamNetLyrComboBox.Size = new System.Drawing.Size(412, 20);
             this.StreamNetLyrComboBox.TabIndex = 1;
             // 
-            // DamLyrLabel
-            // 
-            this.DamLyrLabel.AutoSize = true;
-            this.DamLyrLabel.Location = new System.Drawing.Point(28, 214);
-            this.DamLyrLabel.Name = "DamLyrLabel";
-            this.DamLyrLabel.Size = new System.Drawing.Size(29, 12);
-            this.DamLyrLabel.TabIndex = 2;
-            this.DamLyrLabel.Text = "大坝";
-            // 
-            // DamLyrComboBox
-            // 
-            this.DamLyrComboBox.FormattingEnabled = true;
-            this.DamLyrComboBox.Location = new System.Drawing.Point(28, 244);
-            this.DamLyrComboBox.Name = "DamLyrComboBox";
-            this.DamLyrComboBox.Size = new System.Drawing.Size(412, 20);
-            this.DamLyrComboBox.TabIndex = 3;
-            // 
             // OKButton
             // 
             this.OKButton.Location = new System.Drawing.Point(268, 305);
@@ -93,6 +74,7 @@
             this.CancelButton.TabIndex = 5;
             this.CancelButton.Text = "取消";
             this.CancelButton.UseVisualStyleBackColor = true;
+            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
             // WorkSpacePathLabel
             // 
@@ -149,8 +131,6 @@
             this.Controls.Add(this.WorkSpacePathLabel);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.OKButton);
-            this.Controls.Add(this.DamLyrComboBox);
-            this.Controls.Add(this.DamLyrLabel);
             this.Controls.Add(this.StreamNetLyrComboBox);
             this.Controls.Add(this.StreamNetLyrLabel);
             this.MaximumSize = new System.Drawing.Size(470, 400);
@@ -167,8 +147,6 @@
 
         private System.Windows.Forms.Label StreamNetLyrLabel;
         private System.Windows.Forms.ComboBox StreamNetLyrComboBox;
-        private System.Windows.Forms.Label DamLyrLabel;
-        private System.Windows.Forms.ComboBox DamLyrComboBox;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.Label WorkSpacePathLabel;

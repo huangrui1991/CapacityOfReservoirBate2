@@ -27,7 +27,6 @@ namespace CapacityOfReservoirBate2
                 {
                     if (Lyr is IFeatureLayer)
                     {
-                        this.DamLyrComboBox.Items.Add(Lyr.Name);
                         this.StreamNetLyrComboBox.Items.Add(Lyr.Name);
                         this.WatershedPolygonComboBox.Items.Add(Lyr.Name);
                     }
@@ -48,8 +47,9 @@ namespace CapacityOfReservoirBate2
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            Creater = new VolumeComputer(this.DamLyrComboBox.Text,this.StreamNetLyrComboBox.Text,this.WatershedPolygonComboBox.Text,this.WorkSpacePathTextBox.Text);
+            Creater = new VolumeComputer("Dam",this.StreamNetLyrComboBox.Text,this.WatershedPolygonComboBox.Text,this.WorkSpacePathTextBox.Text);
             Creater.Start();
+            this.Dispose();
         }
 
         private void BrowseButton_Click(object sender, EventArgs e)
@@ -60,6 +60,10 @@ namespace CapacityOfReservoirBate2
             this.WorkSpacePathTextBox.Text = path;
         }
 
-       
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            this.Dispose();
+        }
+
     }
 }
