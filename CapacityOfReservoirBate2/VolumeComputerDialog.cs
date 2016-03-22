@@ -62,6 +62,7 @@ namespace CapacityOfReservoirBate2
 
         private void CancelButton_Click(object sender, EventArgs e)
         {
+            ArcMap.Application.CurrentTool = null;
             this.Dispose();
         }
 

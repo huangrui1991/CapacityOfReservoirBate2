@@ -14,15 +14,15 @@
     <ArcMap>
       <Commands>
         <Button id="CapacityOfReservoirBate2_CreateDEM" class="CreateDEM" message="CreateDEM" caption="CreateDEM" tip="CreateDEM" category="CreateDEM" image="Images\CreateDEM.png" />
+        <Button id="CapacityOfReservoirBate2_CreateWatershed" class="CreateWatershed" message="CreateWatershed" caption="CreateWatershed" tip="CreateWatershed" category="CreateWatershed" image="Images\ComputeCapacity.png" />
         <Tool id="CapacityOfReservoirBate2_DrawDAM" class="DrawDAM" message="Draw DAM" caption="DrawDAM" tip="Draw DAM" category="DrawDAM" image="Images\Tool1.png" cursor="Images\Tool1.cur" />
-        <Button id="CapacityOfReservoirBate2_ComputeCapacity" class="ComputeCapacity" message="ComputeCapacity" caption="ComputeCapacity" tip="ComputeCapacity" category="ComputeCapacity" image="Images\ComputeCapacity.png" />
       </Commands>
       <Toolbars>
         <Toolbar id="CapacityOfReservoirBate2_CreateCapacityToolbar" caption="CreateCapacityToolbar" showInitially="true">
           <Items>
             <Button refID="CapacityOfReservoirBate2_CreateDEM" />
+            <Button refID="CapacityOfReservoirBate2_CreateWatershed" />
             <Tool refID="CapacityOfReservoirBate2_DrawDAM" />
-            <Button refID="CapacityOfReservoirBate2_ComputeCapacity" />
           </Items>
         </Toolbar>
       </Toolbars>

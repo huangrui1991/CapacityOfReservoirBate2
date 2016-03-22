@@ -12,6 +12,7 @@ using ESRI.ArcGIS.Geoprocessor;
 using ESRI.ArcGIS.Geoprocessing;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.DataSourcesFile;
+using ESRI.ArcGIS.ADF;
 
 namespace CapacityOfReservoirBate2
 {
@@ -245,15 +246,19 @@ namespace CapacityOfReservoirBate2
 
         private IGeoProcessorResult Intersect(String FirstLayerName, String SecondLayerName, String OutFeatureClass, String JoinAttribute, String OutputType)
         {
-            Intersect IntersectTool = new Intersect();
-            IntersectTool.in_features = FirstLayerName + ";" + SecondLayerName;
-            IntersectTool.out_feature_class = OutFeatureClass;
-            IntersectTool.join_attributes = JoinAttribute;
-            IntersectTool.output_type = OutputType;
+            using (ComReleaser ComReleaser = new ComReleaser())
+            {
+                Intersect IntersectTool = new Intersect();
+                IntersectTool.in_features = FirstLayerName + ";" + SecondLayerName;
+                IntersectTool.out_feature_class = OutFeatureClass;
+                IntersectTool.join_attributes = JoinAttribute;
+                IntersectTool.output_type = OutputType;
 
-            Geoprocessor GP = new Geoprocessor();
-            IGeoProcessorResult results = (IGeoProcessorResult)GP.Execute(IntersectTool, null);
-            return results;
+                Geoprocessor GP = new Geoprocessor();
+                IGeoProcessorResult results = (IGeoProcessorResult)GP.Execute(IntersectTool, null);
+                ComReleaser.ReleaseCOMObject(GP);
+                return results;
+            }
 
         }
 
@@ -284,19 +289,19 @@ namespace CapacityOfReservoirBate2
                 //StreamList.Add(StartFeature);
 
                 IFields ToStreamFields = StartFeature.Fields;
-                int from_node_index = ToStreamFields.FindField("from_node");
+                int from_node_index = ToStreamFields.FindField("FROM_NODE");
                 string FirstStreamFromNode = StartFeature.get_Value(from_node_index).ToString();
 
                 IFeatureLayer StreamNetFeatureLayer = StreamNetLayer as IFeatureLayer;
                 IFeatureClass StreamNetFeatureClass = StreamNetFeatureLayer.FeatureClass;
                 IQueryFilter Filter = new QueryFilterClass();
-                Filter.WhereClause = "to_node=" +  long.Parse(FirstStreamFromNode);
+                Filter.WhereClause = "TO_NODE=" + long.Parse(FirstStreamFromNode);
                 IFeatureCursor Cursor = StreamNetFeatureClass.Search(Filter, false);
                 IFeature TargetFeature = Cursor.NextFeature();
                 if (TargetFeature == null)
                     return;
                 IFields Fields = TargetFeature.Fields;
-                int to_node_index = Fields.FindField("to_node");
+                int to_node_index = Fields.FindField("TO_NODE");
                 String ToNode = TargetFeature.get_Value(to_node_index).ToString();
 
                 while (ToNode == FirstStreamFromNode)
@@ -306,7 +311,7 @@ namespace CapacityOfReservoirBate2
                     if (TargetFeature == null)
                         break;
                     Fields = TargetFeature.Fields;
-                    to_node_index = Fields.FindField("to_node");
+                    to_node_index = Fields.FindField("TO_NODE");
                     ToNode = TargetFeature.get_Value(to_node_index).ToString();
                 }
                 foreach (IFeature Feature in PartialStreamList)

@@ -158,6 +158,7 @@
             this.Controls.Add(this.OutputPathTextBox);
             this.Controls.Add(this.OutputPathLabel);
             this.Controls.Add(this.InputPathLabel);
+            this.Enabled = false;
             this.MaximumSize = new System.Drawing.Size(470, 400);
             this.MinimumSize = new System.Drawing.Size(470, 400);
             this.Name = "CreateDEMDialog";

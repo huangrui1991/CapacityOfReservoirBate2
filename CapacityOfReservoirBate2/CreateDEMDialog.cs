@@ -132,7 +132,7 @@ namespace CapacityOfReservoirBate2
             {
 
                 _Creater = new DEMCreater(SelectedFeatureLyr.FeatureClass, HeightField, OutputPath, CellSize);
-                System.Threading.Thread CreateDEMThread = new System.Threading.Thread(new System.Threading.ThreadStart(ShowProgressbar));
+                System.Threading.Thread CreateDEMThread = new System.Threading.Thread(new System.Threading.ThreadStart(Start));
                 CreateDEMThread.Start();
                 ProgressBar = new CRProgressBar("Compute Dem, Please wait!",CreateDEMThread);
                 ProgressBar.Show();                             
@@ -146,7 +146,7 @@ namespace CapacityOfReservoirBate2
 
         }
 
-        private void ShowProgressbar()
+        private void Start()
         {
             //
             try

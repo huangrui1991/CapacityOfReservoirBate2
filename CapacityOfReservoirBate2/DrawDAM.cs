@@ -50,6 +50,7 @@ namespace CapacityOfReservoirBate2
         protected override bool OnDeactivate()
         {
             _Count = 0;
+            //ArcMap.Application.CurrentTool = null;
             return base.OnDeactivate();
         }
 

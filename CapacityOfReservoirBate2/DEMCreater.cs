@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;  
 using System.Linq;
 using System.Text;
 using ESRI.ArcGIS.Geodatabase;
@@ -11,6 +12,7 @@ using ESRI.ArcGIS.Geoprocessing;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.SpatialAnalyst;
 using ESRI.ArcGIS.DataSourcesRaster;
+using ESRI.ArcGIS.ADF;
 
 namespace CapacityOfReservoirBate2
 {
@@ -110,22 +112,31 @@ namespace CapacityOfReservoirBate2
             TinEdit.StopEditing(false);
 
             //TIN TO Raster
-            MessageBox.Show("TIN TO Raster");
-            Geoprocessor GP = new Geoprocessor();
-            GP.OverwriteOutput = true;
-            TinRaster TintoRaster = new TinRaster();
-            TintoRaster.in_tin = TinEdit as TinClass;
-            TintoRaster.out_raster = WorkSpacePath + @"\DEM";
-            //TintoRaster.sample_distance = @"CELLSIZE 100" ;
-            TintoRaster.sample_distance = @"CELLSIZE " + CellSize;
-            TintoRaster.method = @"NATURAL_NEIGHBORS";
-            TintoRaster.data_type = "FLOAT";
-            IGeoProcessorResult results = (IGeoProcessorResult)GP.Execute(TintoRaster, null);
-            if (results.Status != esriJobStatus.esriJobSucceeded)
+            using (ComReleaser ComReleaser = new ComReleaser())
             {
-                MessageBox.Show("创建DEM失败！");
-                return false;
+                //MessageBox.Show("TIN TO Raster");
+                Geoprocessor GP = new Geoprocessor();
+                //ComReleaser.ManageLifetime(GP);
+                GP.OverwriteOutput = true;
+                TinRaster TintoRaster = new TinRaster();
+                TintoRaster.in_tin = TinEdit as TinClass;
+                TintoRaster.out_raster = WorkSpacePath + @"\DEM";
+                //TintoRaster.sample_distance = @"CELLSIZE 100" ;
+                TintoRaster.sample_distance = @"CELLSIZE " + CellSize;
+                TintoRaster.method = @"NATURAL_NEIGHBORS";
+                TintoRaster.data_type = "FLOAT";
+                IGeoProcessorResult results = (IGeoProcessorResult)GP.Execute(TintoRaster, null);
+                if (results.Status != esriJobStatus.esriJobSucceeded)
+                {
+                    MessageBox.Show("创建DEM失败！");
+                    return false;
+                }
+                GP = null;
+                ComReleaser.ReleaseCOMObject(GP);
+
             }
+
+            
             return true;
         }
 
