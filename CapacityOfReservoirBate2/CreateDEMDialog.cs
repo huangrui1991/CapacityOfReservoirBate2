@@ -135,7 +135,7 @@ namespace CapacityOfReservoirBate2
                 System.Threading.Thread CreateDEMThread = new System.Threading.Thread(new System.Threading.ThreadStart(Start));
                 CreateDEMThread.Start();
                 ProgressBar = new CRProgressBar("Compute Dem, Please wait!",CreateDEMThread);
-                ProgressBar.Show();                             
+                ProgressBar.Show();                              
             }
             catch (Exception E)
             {

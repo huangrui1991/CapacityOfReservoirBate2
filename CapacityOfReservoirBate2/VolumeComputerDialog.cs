@@ -42,7 +42,7 @@ namespace CapacityOfReservoirBate2
 
         private void VolumeComputerDialog_Load(object sender, EventArgs e)
         {
-            
+                
         }
 
         private void OKButton_Click(object sender, EventArgs e)

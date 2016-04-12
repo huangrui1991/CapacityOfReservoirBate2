@@ -23,16 +23,15 @@ namespace CapacityOfReservoirBate2
         private IGeoDataset _FillDEMDataset;
         private IGeoDataset _FlowDirDataset;
         private IGeoDataset _FlowAccDataset;
-        private CreateWatershedDialog _Dialog;
-        private String _WorkSpacePath;
         private IGeoDataset _StreamNetDataset;
+        private String _BinaryIndex;
 
         private IHydrologyOp _HydrologyOp = new RasterHydrologyOpClass();
 
-        public String WorkSpacePath
+        public String BinaryIndex
         {
-            get { return _WorkSpacePath; }
-            set { _WorkSpacePath = value; }
+            get { return _BinaryIndex; }
+            set { _BinaryIndex = value; }
         }
 
         public String DEMLayerName
@@ -42,24 +41,31 @@ namespace CapacityOfReservoirBate2
         }
 
 
-        public WatershedCreater(CreateWatershedDialog D, String DEMLyrName, String WSP)
+        public WatershedCreater(String DEMLyrName,String BIndex)
         {
             DEMLayerName = DEMLyrName;
-            WorkSpacePath = WSP;
-            _Dialog = D;
+            BinaryIndex = BIndex;
         }
         public override bool Start()
+        {
+            if (DEMLayerName == "")
+            {
+                return false;
+            }
+            if (BinaryIndex == "")
+            {
+                return false;
+            }
+            return Create();
+        }
+
+        protected override bool Create()
         {
             FillDEM();
             FlowDirAcc();
             StreamNet();
             Watershed();
             return true;
-        }
-
-        protected override bool Create()
-        {
-            throw new NotImplementedException();
         }
 
         private bool FillDEM()
@@ -105,11 +111,11 @@ namespace CapacityOfReservoirBate2
             {
                 _FlowDirDataset = _HydrologyOp.FlowDirection(_FillDEMDataset, false, true);
                 _FlowAccDataset = _HydrologyOp.FlowAccumulation(_FlowDirDataset);
-                IRasterLayer FlowDirLayer = new RasterLayerClass();
-                IRaster FlowDirRst = _FlowDirDataset as IRaster;
-                FlowDirLayer.CreateFromRaster(FlowDirRst);
-                FlowDirLayer.Name = "FlowDirDataset";
-                ArcMap.Document.AddLayer(FlowDirLayer as ILayer);
+                //IRasterLayer FlowDirLayer = new RasterLayerClass();
+                //IRaster FlowDirRst = _FlowDirDataset as IRaster;
+                //FlowDirLayer.CreateFromRaster(FlowDirRst);
+                //FlowDirLayer.Name = "FlowDirDataset";
+                //ArcMap.Document.AddLayer(FlowDirLayer as ILayer);
 
                 //MessageBox.Show(FlowAccMax.ToString() + " " + FlowAccMin.ToString());
                 return true;
@@ -133,7 +139,8 @@ namespace CapacityOfReservoirBate2
                 IRasterStatistics Statistics = FlowAccBand.Statistics;
                 Double FlowAccMax = Statistics.Maximum;
                 Double FlowAccMin = Statistics.Minimum;
-                int Theldhold = Convert.ToInt16((FlowAccMax + FlowAccMin) * 0.0005);
+                Double Index = Convert.ToDouble(BinaryIndex) / 100000;
+                int Theldhold = Convert.ToInt16((FlowAccMax + FlowAccMin) * Index);
 
                 //usong IMapALgebraOp to binary map
                 IMapAlgebraOp MapAlgebraOp = new RasterMapAlgebraOpClass();
@@ -222,7 +229,6 @@ namespace CapacityOfReservoirBate2
             }
 
         }
-
-
+         
     }
 }

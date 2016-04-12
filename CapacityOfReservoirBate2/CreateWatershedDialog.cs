@@ -23,6 +23,7 @@ namespace CapacityOfReservoirBate2
         public CreateWatershedDialog()
         {
             InitializeComponent();
+            BinaryIndexTextBox.DataBindings.Add("Text", BinaryIndexTrackBar, "Value", false, DataSourceUpdateMode.OnPropertyChanged);
             ProgressBar.Hide();
         }
 
@@ -43,13 +44,20 @@ namespace CapacityOfReservoirBate2
             FolderBrowserDialog Dialog = new FolderBrowserDialog();
             DialogResult Result = Dialog.ShowDialog();
             string path = Dialog.SelectedPath;
-            this.OutputPathTextBox.Text = path;
+            
         }
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            Creater = new WatershedCreater(this, this.InputDEMComboBox.Text, this.OutputPathTextBox.Text);
+            Creater = new WatershedCreater(this.InputDEMComboBox.Text,this.BinaryIndexTextBox.Text);
+            //ProgressBar.Show();
             Creater.Start();
+            this.Dispose();
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            this.Dispose();
         }
 
 

@@ -32,11 +32,11 @@
             this.StreamNetLyrComboBox = new System.Windows.Forms.ComboBox();
             this.OKButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
+            this.WatershedPolygonLabel = new System.Windows.Forms.Label();
+            this.WatershedPolygonComboBox = new System.Windows.Forms.ComboBox();
             this.WorkSpacePathLabel = new System.Windows.Forms.Label();
             this.WorkSpacePathTextBox = new System.Windows.Forms.TextBox();
             this.BrowseButton = new System.Windows.Forms.Button();
-            this.WatershedPolygonLabel = new System.Windows.Forms.Label();
-            this.WatershedPolygonComboBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // StreamNetLyrLabel
@@ -76,6 +76,23 @@
             this.CancelButton.UseVisualStyleBackColor = true;
             this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
             // 
+            // WatershedPolygonLabel
+            // 
+            this.WatershedPolygonLabel.AutoSize = true;
+            this.WatershedPolygonLabel.Location = new System.Drawing.Point(28, 154);
+            this.WatershedPolygonLabel.Name = "WatershedPolygonLabel";
+            this.WatershedPolygonLabel.Size = new System.Drawing.Size(41, 12);
+            this.WatershedPolygonLabel.TabIndex = 9;
+            this.WatershedPolygonLabel.Text = "汇水区";
+            // 
+            // WatershedPolygonComboBox
+            // 
+            this.WatershedPolygonComboBox.FormattingEnabled = true;
+            this.WatershedPolygonComboBox.Location = new System.Drawing.Point(28, 179);
+            this.WatershedPolygonComboBox.Name = "WatershedPolygonComboBox";
+            this.WatershedPolygonComboBox.Size = new System.Drawing.Size(412, 20);
+            this.WatershedPolygonComboBox.TabIndex = 10;
+            // 
             // WorkSpacePathLabel
             // 
             this.WorkSpacePathLabel.AutoSize = true;
@@ -101,23 +118,6 @@
             this.BrowseButton.Text = "浏览";
             this.BrowseButton.UseVisualStyleBackColor = true;
             this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
-            // 
-            // WatershedPolygonLabel
-            // 
-            this.WatershedPolygonLabel.AutoSize = true;
-            this.WatershedPolygonLabel.Location = new System.Drawing.Point(28, 154);
-            this.WatershedPolygonLabel.Name = "WatershedPolygonLabel";
-            this.WatershedPolygonLabel.Size = new System.Drawing.Size(41, 12);
-            this.WatershedPolygonLabel.TabIndex = 9;
-            this.WatershedPolygonLabel.Text = "汇水区";
-            // 
-            // WatershedPolygonComboBox
-            // 
-            this.WatershedPolygonComboBox.FormattingEnabled = true;
-            this.WatershedPolygonComboBox.Location = new System.Drawing.Point(28, 179);
-            this.WatershedPolygonComboBox.Name = "WatershedPolygonComboBox";
-            this.WatershedPolygonComboBox.Size = new System.Drawing.Size(412, 20);
-            this.WatershedPolygonComboBox.TabIndex = 10;
             // 
             // VolumeComputerDialog
             // 
@@ -149,10 +149,10 @@
         private System.Windows.Forms.ComboBox StreamNetLyrComboBox;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Button CancelButton;
+        private System.Windows.Forms.Label WatershedPolygonLabel;
+        private System.Windows.Forms.ComboBox WatershedPolygonComboBox;
         private System.Windows.Forms.Label WorkSpacePathLabel;
         private System.Windows.Forms.TextBox WorkSpacePathTextBox;
         private System.Windows.Forms.Button BrowseButton;
-        private System.Windows.Forms.Label WatershedPolygonLabel;
-        private System.Windows.Forms.ComboBox WatershedPolygonComboBox;
     }
 }

@@ -13,6 +13,9 @@ using ESRI.ArcGIS.Geoprocessing;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.ADF;
+using ESRI.ArcGIS.NetworkAnalysis;
+using ESRI.ArcGIS.ConversionTools;
+using ESRI.ArcGIS.SpatialAnalyst;
 
 namespace CapacityOfReservoirBate2
 {
@@ -213,7 +216,10 @@ namespace CapacityOfReservoirBate2
 
             //get FirstStreamFromNode
             GetStreamList(FirstStreamFeature);
-             
+            foreach (IFeature StreamFeature in StreamList)
+            {
+                ArcMap.Document.ActiveView.FocusMap.SelectFeature(StreamNetLayer, StreamFeature);
+            }
             return true;
 
 
@@ -329,10 +335,7 @@ namespace CapacityOfReservoirBate2
                     }
                 }
 
-                foreach (IFeature StreamFeature in StreamList)
-                {
-                    ArcMap.Document.ActiveView.FocusMap.SelectFeature(WatershedLayer, StreamFeature);
-                }
+                
             }
             catch (Exception e)
             {
@@ -340,12 +343,86 @@ namespace CapacityOfReservoirBate2
             }
             
         }
+
+        private void ComputeVolume()
+        {
+            try
+            {
+                IFeature MergeFeature = WatershedPolygonList.First<IFeature>();
+                WatershedPolygonList.Remove(MergeFeature);
+                IGeometry MergeGeo = MergeFeature.Shape;
+                ITopologicalOperator4 MergeTopo = MergeGeo as ITopologicalOperator4;
+                MergeTopo.IsKnownSimple_2 = false;
+                MergeTopo.Simplify();
+                foreach (IFeature Feature in WatershedPolygonList)
+                {
+                    MergeGeo = MergeTopo.Union(Feature.Shape);
+                    MergeTopo = MergeGeo as ITopologicalOperator4;
+                }
+                IPolygon MergePolygon = MergeGeo as IPolygon;
+
+                using (ComReleaser ComReleaser = new ComReleaser())
+                {
+                    //MessageBox.Show("TIN TO Raster");
+                    Geoprocessor GP = new Geoprocessor();
+                    //ComReleaser.ManageLifetime(GP);
+                    GP.OverwriteOutput = true;
+                    PolygonToRaster PolygonToRaster = new ESRI.ArcGIS.ConversionTools.PolygonToRaster();
+                    PolygonToRaster.cellsize = @"20";
+                    PolygonToRaster.cell_assignment = "CELL_CENTER";
+                    PolygonToRaster.in_features = WatershedLayer as IFeatureLayer;
+                    PolygonToRaster.out_rasterdataset = WorkSpacePath + @"/Raster";
+                    PolygonToRaster.priority_field = "NONE";
+                    PolygonToRaster.value_field = "ID";
+
+                    GP.Execute(PolygonToRaster, null);
+                    ComReleaser.ReleaseCOMObject(GP);
+                }
+
+                IMapAlgebraOp MapAlgebraOp = new RasterMapAlgebraOpClass();
+                IRasterLayer DemLayer = _DamLayer as IRasterLayer;
+                
+
+
+                MapAlgebraOp.BindRaster(DemLayer as IGeoDataset, "FlowAccDataset");
+                IGeoDataset GeoDataset = MapAlgebraOp.Execute("([Raster] / [Raster]) * [Fill_dem]");
+                IRaster Raster = GeoDataset as IRaster;
+                IRasterLayer RasterLayer = new RasterLayer();
+                RasterLayer.CreateFromRaster(Raster);
+
+                using (ComReleaser ComReleaser = new ComReleaser())
+                {
+                    //MessageBox.Show("TIN TO Raster");
+                    Geoprocessor GP = new Geoprocessor();
+                    //ComReleaser.ManageLifetime(GP);
+                    GP.OverwriteOutput = true;
+                    SurfaceVolume SurfaceVolume = new SurfaceVolume();
+                    SurfaceVolume.base_z = 840;
+                    SurfaceVolume.in_surface = RasterLayer;
+                    SurfaceVolume.out_text_file = WorkSpacePath + @"/Result/840.txt";
+                    SurfaceVolume.reference_plane = "BELOW";
+                    SurfaceVolume.z_factor = 1;
+                    SurfaceVolume.pyramid_level_resolution = 0;
+
+                    GP.Execute(SurfaceVolume, null);
+                    ComReleaser.ReleaseCOMObject(GP);
+                }
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            
+
+        }
                 
         public override bool Start()
         {
             GetDamPoint();
             SelectStream();
             GetWatershedPolygon((WatershedLayer as IFeatureLayer).FeatureClass);
+            ComputeVolume();
             return true;
         }
 
