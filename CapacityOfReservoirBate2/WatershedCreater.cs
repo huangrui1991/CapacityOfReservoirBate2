@@ -90,11 +90,11 @@ namespace CapacityOfReservoirBate2
 
                 _FillDEMDataset = _HydrologyOp.Fill(DEMGeoDataset);
 
-                //IRasterLayer FillDEMLayer = new RasterLayerClass();
-                //IRaster FillDEMRst = _FillDEMDataset as IRaster;
-                //FillDEMLayer.CreateFromRaster(FillDEMRst);
-                //FillDEMLayer.Name = "FillDEM";
-                //ArcMap.Document.AddLayer(FillDEMLayer as ILayer);
+                IRasterLayer FillDEMLayer = new RasterLayerClass();
+                IRaster FillDEMRst = _FillDEMDataset as IRaster;
+                FillDEMLayer.CreateFromRaster(FillDEMRst);
+                FillDEMLayer.Name = "FillDEM";
+                ArcMap.Document.AddLayer(FillDEMLayer as ILayer);
                 return true;
             }
             catch (Exception e)

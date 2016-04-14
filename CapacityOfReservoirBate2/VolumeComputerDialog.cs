@@ -30,7 +30,10 @@ namespace CapacityOfReservoirBate2
                         this.StreamNetLyrComboBox.Items.Add(Lyr.Name);
                         this.WatershedPolygonComboBox.Items.Add(Lyr.Name);
                     }
-
+                    if (Lyr is IRasterLayer)
+                    {
+                        this.DEMComboBox.Items.Add(Lyr.Name);
+                    }
                     Lyr = Lyrs.Next();
                 }
             }
@@ -47,7 +50,7 @@ namespace CapacityOfReservoirBate2
 
         private void OKButton_Click(object sender, EventArgs e)
         {
-            Creater = new VolumeComputer("Dam",this.StreamNetLyrComboBox.Text,this.WatershedPolygonComboBox.Text,this.WorkSpacePathTextBox.Text);
+            Creater = new VolumeComputer("Dam",this.StreamNetLyrComboBox.Text,this.WatershedPolygonComboBox.Text,this.WorkSpacePathTextBox.Text,DEMComboBox.Text,CellSizeTextBox.Text,HeightTextBox.Text,SeparationTextBox.Text);
             Creater.Start();
             this.Dispose();
         }
@@ -66,5 +69,33 @@ namespace CapacityOfReservoirBate2
             this.Dispose();
         }
 
+        private void CellSizeTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8)
+            {
+                e.Handled = true;
+            }
+        }
+
+       
+
+       
+        
     }
 }

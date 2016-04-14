@@ -37,6 +37,14 @@
             this.WorkSpacePathLabel = new System.Windows.Forms.Label();
             this.WorkSpacePathTextBox = new System.Windows.Forms.TextBox();
             this.BrowseButton = new System.Windows.Forms.Button();
+            this.DEMLabel = new System.Windows.Forms.Label();
+            this.DEMComboBox = new System.Windows.Forms.ComboBox();
+            this.CellSizeLabel = new System.Windows.Forms.Label();
+            this.CellSizeTextBox = new System.Windows.Forms.TextBox();
+            this.HeightLabel = new System.Windows.Forms.Label();
+            this.HeightTextBox = new System.Windows.Forms.TextBox();
+            this.SeparationLabel = new System.Windows.Forms.Label();
+            this.SeparationTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // StreamNetLyrLabel
@@ -58,7 +66,7 @@
             // 
             // OKButton
             // 
-            this.OKButton.Location = new System.Drawing.Point(268, 305);
+            this.OKButton.Location = new System.Drawing.Point(284, 486);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
             this.OKButton.TabIndex = 4;
@@ -68,7 +76,7 @@
             // 
             // CancelButton
             // 
-            this.CancelButton.Location = new System.Drawing.Point(349, 305);
+            this.CancelButton.Location = new System.Drawing.Point(365, 486);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(75, 23);
             this.CancelButton.TabIndex = 5;
@@ -119,11 +127,87 @@
             this.BrowseButton.UseVisualStyleBackColor = true;
             this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
+            // DEMLabel
+            // 
+            this.DEMLabel.AutoSize = true;
+            this.DEMLabel.Location = new System.Drawing.Point(28, 217);
+            this.DEMLabel.Name = "DEMLabel";
+            this.DEMLabel.Size = new System.Drawing.Size(47, 12);
+            this.DEMLabel.TabIndex = 11;
+            this.DEMLabel.Text = "DEM图层";
+            // 
+            // DEMComboBox
+            // 
+            this.DEMComboBox.FormattingEnabled = true;
+            this.DEMComboBox.Location = new System.Drawing.Point(28, 246);
+            this.DEMComboBox.Name = "DEMComboBox";
+            this.DEMComboBox.Size = new System.Drawing.Size(412, 20);
+            this.DEMComboBox.TabIndex = 12;
+            // 
+            // CellSizeLabel
+            // 
+            this.CellSizeLabel.AutoSize = true;
+            this.CellSizeLabel.Location = new System.Drawing.Point(30, 284);
+            this.CellSizeLabel.Name = "CellSizeLabel";
+            this.CellSizeLabel.Size = new System.Drawing.Size(53, 12);
+            this.CellSizeLabel.TabIndex = 13;
+            this.CellSizeLabel.Text = "栅格大小";
+            // 
+            // CellSizeTextBox
+            // 
+            this.CellSizeTextBox.Location = new System.Drawing.Point(28, 312);
+            this.CellSizeTextBox.Name = "CellSizeTextBox";
+            this.CellSizeTextBox.Size = new System.Drawing.Size(412, 21);
+            this.CellSizeTextBox.TabIndex = 14;
+            this.CellSizeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CellSizeTextBox_KeyPress);
+            // 
+            // HeightLabel
+            // 
+            this.HeightLabel.AutoSize = true;
+            this.HeightLabel.Location = new System.Drawing.Point(30, 349);
+            this.HeightLabel.Name = "HeightLabel";
+            this.HeightLabel.Size = new System.Drawing.Size(53, 12);
+            this.HeightLabel.TabIndex = 15;
+            this.HeightLabel.Text = "起始高度";
+            // 
+            // HeightTextBox
+            // 
+            this.HeightTextBox.Location = new System.Drawing.Point(28, 373);
+            this.HeightTextBox.Name = "HeightTextBox";
+            this.HeightTextBox.Size = new System.Drawing.Size(412, 21);
+            this.HeightTextBox.TabIndex = 16;
+            this.HeightTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
+            // 
+            // SeparationLabel
+            // 
+            this.SeparationLabel.AutoSize = true;
+            this.SeparationLabel.Location = new System.Drawing.Point(30, 411);
+            this.SeparationLabel.Name = "SeparationLabel";
+            this.SeparationLabel.Size = new System.Drawing.Size(29, 12);
+            this.SeparationLabel.TabIndex = 17;
+            this.SeparationLabel.Text = "间距";
+            // 
+            // SeparationTextBox
+            // 
+            this.SeparationTextBox.Location = new System.Drawing.Point(28, 438);
+            this.SeparationTextBox.Name = "SeparationTextBox";
+            this.SeparationTextBox.Size = new System.Drawing.Size(412, 21);
+            this.SeparationTextBox.TabIndex = 18;
+            this.SeparationTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
+            // 
             // VolumeComputerDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(454, 361);
+            this.ClientSize = new System.Drawing.Size(454, 531);
+            this.Controls.Add(this.SeparationTextBox);
+            this.Controls.Add(this.SeparationLabel);
+            this.Controls.Add(this.HeightTextBox);
+            this.Controls.Add(this.HeightLabel);
+            this.Controls.Add(this.CellSizeTextBox);
+            this.Controls.Add(this.CellSizeLabel);
+            this.Controls.Add(this.DEMComboBox);
+            this.Controls.Add(this.DEMLabel);
             this.Controls.Add(this.WatershedPolygonComboBox);
             this.Controls.Add(this.WatershedPolygonLabel);
             this.Controls.Add(this.BrowseButton);
@@ -133,8 +217,8 @@
             this.Controls.Add(this.OKButton);
             this.Controls.Add(this.StreamNetLyrComboBox);
             this.Controls.Add(this.StreamNetLyrLabel);
-            this.MaximumSize = new System.Drawing.Size(470, 400);
-            this.MinimumSize = new System.Drawing.Size(470, 400);
+            this.MaximumSize = new System.Drawing.Size(470, 570);
+            this.MinimumSize = new System.Drawing.Size(470, 500);
             this.Name = "VolumeComputerDialog";
             this.Text = "VolumeComputerDialog";
             this.Load += new System.EventHandler(this.VolumeComputerDialog_Load);
@@ -154,5 +238,13 @@
         private System.Windows.Forms.Label WorkSpacePathLabel;
         private System.Windows.Forms.TextBox WorkSpacePathTextBox;
         private System.Windows.Forms.Button BrowseButton;
+        private System.Windows.Forms.Label DEMLabel;
+        private System.Windows.Forms.ComboBox DEMComboBox;
+        private System.Windows.Forms.Label CellSizeLabel;
+        private System.Windows.Forms.TextBox CellSizeTextBox;
+        private System.Windows.Forms.Label HeightLabel;
+        private System.Windows.Forms.TextBox HeightTextBox;
+        private System.Windows.Forms.Label SeparationLabel;
+        private System.Windows.Forms.TextBox SeparationTextBox;
     }
 }

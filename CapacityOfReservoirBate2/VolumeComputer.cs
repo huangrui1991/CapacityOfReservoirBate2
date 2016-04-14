@@ -16,6 +16,7 @@ using ESRI.ArcGIS.ADF;
 using ESRI.ArcGIS.NetworkAnalysis;
 using ESRI.ArcGIS.ConversionTools;
 using ESRI.ArcGIS.SpatialAnalyst;
+using ESRI.ArcGIS.DataSourcesRaster;
 
 namespace CapacityOfReservoirBate2
 {
@@ -30,6 +31,10 @@ namespace CapacityOfReservoirBate2
         private IFeature _DamPointFeature = null;
         private List<IFeature> _StreamList = new List<IFeature>();
         private HashSet<IFeature> _WatershedPolygonList = new HashSet<IFeature>();
+        private String _DEMLayerName;
+        private String _Cellsize;
+        private String _Base_Z;
+        private String _Separation;
 
 
         #region Properties
@@ -139,12 +144,16 @@ namespace CapacityOfReservoirBate2
         #endregion
 
 
-        public VolumeComputer(String DamLyrName, String StreamNetLyrName, String WatershedLyrName,String WorkSpacePath)
+        public VolumeComputer(String DamLyrName, String StreamNetLyrName, String WatershedLyrName,String WorkSpacePath,String DEMLyrName,String Cellsize,String Z,String Separation)
         {
             _DamLayer = GetLayerByName(DamLyrName);
             _StreamNetLayer = GetLayerByName(StreamNetLyrName);
             _WatershedLayer = GetLayerByName(WatershedLyrName);
             _WorkSpacePath = WorkSpacePath;
+            _DEMLayerName = DEMLyrName;
+            _Cellsize = Cellsize;
+            _Base_Z = Z;
+            _Separation = Separation;
         }
 
         private void GetDamPoint()
@@ -368,7 +377,7 @@ namespace CapacityOfReservoirBate2
                     //ComReleaser.ManageLifetime(GP);
                     GP.OverwriteOutput = true;
                     PolygonToRaster PolygonToRaster = new ESRI.ArcGIS.ConversionTools.PolygonToRaster();
-                    PolygonToRaster.cellsize = @"20";
+                    PolygonToRaster.cellsize = _Cellsize;
                     PolygonToRaster.cell_assignment = "CELL_CENTER";
                     PolygonToRaster.in_features = WatershedLayer as IFeatureLayer;
                     PolygonToRaster.out_rasterdataset = WorkSpacePath + @"/Raster";
@@ -379,35 +388,68 @@ namespace CapacityOfReservoirBate2
                     ComReleaser.ReleaseCOMObject(GP);
                 }
 
+                ILayer RasterLyr = GetLayerByName("Raster");
+                ILayer FillDEMLyr = GetLayerByName(_DEMLayerName);
                 IMapAlgebraOp MapAlgebraOp = new RasterMapAlgebraOpClass();
-                IRasterLayer DemLayer = _DamLayer as IRasterLayer;
-                
+                IRasterLayer FillDemRstLayer = FillDEMLyr as IRasterLayer;
+                IRasterLayer RasterRstLayer = RasterLyr as IRasterLayer;
 
 
-                MapAlgebraOp.BindRaster(DemLayer as IGeoDataset, "FlowAccDataset");
-                IGeoDataset GeoDataset = MapAlgebraOp.Execute("([Raster] / [Raster]) * [Fill_dem]");
+                MapAlgebraOp.BindRaster(FillDemRstLayer as IGeoDataset, "FillDemRstLayer");
+                MapAlgebraOp.BindRaster(RasterRstLayer as IGeoDataset, "RasterRstLayer");
+
+                IGeoDataset GeoDataset = MapAlgebraOp.Execute("([RasterRstLayer] / [RasterRstLayer]) * [FillDemRstLayer]");
                 IRaster Raster = GeoDataset as IRaster;
                 IRasterLayer RasterLayer = new RasterLayer();
                 RasterLayer.CreateFromRaster(Raster);
 
-                using (ComReleaser ComReleaser = new ComReleaser())
+                IRasterBandCollection RasterBandCol = Raster as IRasterBandCollection;
+                IRasterBand RasterBand = RasterBandCol.Item(0);
+                IRasterStatistics Statistics = RasterBand.Statistics;
+                Double RasterMin = Statistics.Minimum;
+                Double Separation = Convert.ToDouble(_Separation);
+                Double Base_Z = Convert.ToDouble(_Base_Z);
+
+                while (Base_Z > RasterMin)
                 {
-                    //MessageBox.Show("TIN TO Raster");
-                    Geoprocessor GP = new Geoprocessor();
-                    //ComReleaser.ManageLifetime(GP);
-                    GP.OverwriteOutput = true;
-                    SurfaceVolume SurfaceVolume = new SurfaceVolume();
-                    SurfaceVolume.base_z = 840;
-                    SurfaceVolume.in_surface = RasterLayer;
-                    SurfaceVolume.out_text_file = WorkSpacePath + @"/Result/840.txt";
-                    SurfaceVolume.reference_plane = "BELOW";
-                    SurfaceVolume.z_factor = 1;
-                    SurfaceVolume.pyramid_level_resolution = 0;
+                    using (ComReleaser ComReleaser = new ComReleaser())
+                    {
+                        Geoprocessor GP = new Geoprocessor();
+                        //ComReleaser.ManageLifetime(GP);
+                        GP.OverwriteOutput = true;
+                        SurfaceVolume SurfaceVolume = new SurfaceVolume();
+                        SurfaceVolume.base_z = Convert.ToDouble(Base_Z);
+                        SurfaceVolume.in_surface = RasterLayer;
+                        SurfaceVolume.out_text_file = WorkSpacePath + @"/" + Base_Z.ToString() + ".txt";
+                        SurfaceVolume.reference_plane = "BELOW";
+                        SurfaceVolume.z_factor = 1;
+                        SurfaceVolume.pyramid_level_resolution = 0;
 
-                    GP.Execute(SurfaceVolume, null);
-                    ComReleaser.ReleaseCOMObject(GP);
+                        GP.Execute(SurfaceVolume, null);
+                        ComReleaser.ReleaseCOMObject(GP);
+                    }
+                    Base_Z = Base_Z - Separation;
+                    if (Base_Z < RasterMin)
+                    {
+                        using (ComReleaser ComReleaser = new ComReleaser())
+                        {
+                            Geoprocessor GP = new Geoprocessor();
+                            //ComReleaser.ManageLifetime(GP);
+                            GP.OverwriteOutput = true;
+                            SurfaceVolume SurfaceVolume = new SurfaceVolume();
+                            SurfaceVolume.base_z = RasterMin;
+                            SurfaceVolume.in_surface = RasterLayer;
+                            SurfaceVolume.out_text_file = WorkSpacePath + @"/" + RasterMin.ToString() + ".txt";
+                            SurfaceVolume.reference_plane = "BELOW";
+                            SurfaceVolume.z_factor = 1;
+                            SurfaceVolume.pyramid_level_resolution = 0;
+
+                            GP.Execute(SurfaceVolume, null);
+                            ComReleaser.ReleaseCOMObject(GP);
+                        }
+                    }
                 }
-
+                
             }
             catch (Exception e)
             {
