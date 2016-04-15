@@ -17,6 +17,9 @@ using ESRI.ArcGIS.NetworkAnalysis;
 using ESRI.ArcGIS.ConversionTools;
 using ESRI.ArcGIS.SpatialAnalyst;
 using ESRI.ArcGIS.DataSourcesRaster;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using System.IO;
 
 namespace CapacityOfReservoirBate2
 {
@@ -35,6 +38,7 @@ namespace CapacityOfReservoirBate2
         private String _Cellsize;
         private String _Base_Z;
         private String _Separation;
+        private Double _MinHeight;
 
 
         #region Properties
@@ -144,7 +148,7 @@ namespace CapacityOfReservoirBate2
         #endregion
 
 
-        public VolumeComputer(String DamLyrName, String StreamNetLyrName, String WatershedLyrName,String WorkSpacePath,String DEMLyrName,String Cellsize,String Z,String Separation)
+        public VolumeComputer(String DamLyrName, String StreamNetLyrName, String WatershedLyrName, String WorkSpacePath, String DEMLyrName, String Cellsize, String Z, String Separation)
         {
             _DamLayer = GetLayerByName(DamLyrName);
             _StreamNetLayer = GetLayerByName(StreamNetLyrName);
@@ -344,13 +348,13 @@ namespace CapacityOfReservoirBate2
                     }
                 }
 
-                
+
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
-            
+
         }
 
         private void ComputeVolume()
@@ -406,11 +410,11 @@ namespace CapacityOfReservoirBate2
                 IRasterBandCollection RasterBandCol = Raster as IRasterBandCollection;
                 IRasterBand RasterBand = RasterBandCol.Item(0);
                 IRasterStatistics Statistics = RasterBand.Statistics;
-                Double RasterMin = Statistics.Minimum;
+                _MinHeight = Statistics.Minimum;
                 Double Separation = Convert.ToDouble(_Separation);
                 Double Base_Z = Convert.ToDouble(_Base_Z);
 
-                while (Base_Z > RasterMin)
+                while (Base_Z > _MinHeight)
                 {
                     using (ComReleaser ComReleaser = new ComReleaser())
                     {
@@ -429,7 +433,7 @@ namespace CapacityOfReservoirBate2
                         ComReleaser.ReleaseCOMObject(GP);
                     }
                     Base_Z = Base_Z - Separation;
-                    if (Base_Z < RasterMin)
+                    if (Base_Z < _MinHeight)
                     {
                         using (ComReleaser ComReleaser = new ComReleaser())
                         {
@@ -437,9 +441,9 @@ namespace CapacityOfReservoirBate2
                             //ComReleaser.ManageLifetime(GP);
                             GP.OverwriteOutput = true;
                             SurfaceVolume SurfaceVolume = new SurfaceVolume();
-                            SurfaceVolume.base_z = RasterMin;
+                            SurfaceVolume.base_z = _MinHeight;
                             SurfaceVolume.in_surface = RasterLayer;
-                            SurfaceVolume.out_text_file = WorkSpacePath + @"/" + RasterMin.ToString() + ".txt";
+                            SurfaceVolume.out_text_file = WorkSpacePath + @"/" + _MinHeight.ToString() + ".txt";
                             SurfaceVolume.reference_plane = "BELOW";
                             SurfaceVolume.z_factor = 1;
                             SurfaceVolume.pyramid_level_resolution = 0;
@@ -449,22 +453,134 @@ namespace CapacityOfReservoirBate2
                         }
                     }
                 }
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+
+        }
+
+        private void ResultOutput()
+        {
+            try
+            {
+                HSSFWorkbook HSSFWB = new HSSFWorkbook();
+                ISheet Table = HSSFWB.CreateSheet("库容");
+                NPOI.SS.UserModel.IRow RowHead = Table.CreateRow(0);
+
+                ICell Cell_0 = RowHead.CreateCell(0);
+                Cell_0.SetCellValue("高度");
+
+                ICell Cell_1 = RowHead.CreateCell(1);
+                Cell_1.SetCellValue("二维面积");
+
+                ICell Cell_2 = RowHead.CreateCell(2);
+                Cell_2.SetCellValue("三维面积");
+
+                ICell Cell_3 = RowHead.CreateCell(3);
+                Cell_3.SetCellValue("库容");
+
+                Double RasterMin = _MinHeight;
+                Double Separation = Convert.ToDouble(_Separation);
+                Double Base_Z = Convert.ToDouble(_Base_Z);
+                int LineIndex = 1;
+                while (Base_Z > RasterMin)
+                {
+                     
+                    String FilePath = WorkSpacePath + @"/" + Base_Z.ToString() + ".txt";
+                    DataRead(FilePath, Table, LineIndex);
+
+                    Base_Z = Base_Z - Separation;
+                    if (Base_Z < RasterMin)
+                    {
+                        DataRead(WorkSpacePath + @"/" + _MinHeight.ToString() + ".txt", Table, LineIndex);
+                    }
+                    ++LineIndex;
+                }
+                using (System.IO.FileStream Fs = File.OpenWrite(WorkSpacePath + @"/库容.xls"))
+                {
+                    HSSFWB.Write(Fs);   //向打开的这个xls文件中写入保存。
+                }
                 
             }
+
+                
+            
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
             
 
+
         }
-                
+
+
+        private void DataRead(string FilePath, ISheet Table, int LineIndex)
+        {
+            if (!File.Exists(FilePath))
+            {
+                MessageBox.Show("File " + FilePath + " is not exist!");
+            }
+            else
+            {
+                System.IO.FileStream FileStream = new System.IO.FileStream(FilePath, FileMode.Open, FileAccess.Read);
+                StreamReader StreamReader = new StreamReader(FileStream, Encoding.Default);
+                FileStream.Seek(0, SeekOrigin.Begin);
+                string ContentLine1 = StreamReader.ReadLine();
+                string ContentLine2 = StreamReader.ReadLine();
+
+                if (ContentLine2 != null)
+                {
+
+                    string Dataset = ContentLine2.Substring(0, ContentLine2.IndexOf(",")).Trim();
+                    ContentLine2 = ContentLine2.Remove(0, ContentLine2.IndexOf(",") + 1);
+
+                    string Plane_Height = ContentLine2.Substring(0, ContentLine2.IndexOf(",")).Trim();
+                    ContentLine2 = ContentLine2.Remove(0, ContentLine2.IndexOf(",") + 1);
+
+                    string Reference = ContentLine2.Substring(0, ContentLine2.IndexOf(",")).Trim();
+                    ContentLine2 = ContentLine2.Remove(0, ContentLine2.IndexOf(",") + 1);
+
+                    string Z_Factor = ContentLine2.Substring(0, ContentLine2.IndexOf(",")).Trim();
+                    ContentLine2 = ContentLine2.Remove(0, ContentLine2.IndexOf(",") + 1);
+
+                    string Area_2D = ContentLine2.Substring(0, ContentLine2.IndexOf(",")).Trim();
+                    ContentLine2 = ContentLine2.Remove(0, ContentLine2.IndexOf(",") + 1);
+
+                    string Area_3D = ContentLine2.Substring(0, ContentLine2.IndexOf(",")).Trim();
+                    ContentLine2 = ContentLine2.Remove(0, ContentLine2.IndexOf(",") + 1);
+
+                    string Volume = ContentLine2.Trim();
+
+
+
+                    NPOI.SS.UserModel.IRow DataRow = Table.CreateRow(LineIndex);
+                    ICell HeightCell = DataRow.CreateCell(0);
+                    ICell Area_2DCell = DataRow.CreateCell(1);
+                    ICell Area_3DCell = DataRow.CreateCell(2);
+                    ICell VolumeCell = DataRow.CreateCell(3);
+
+                    HeightCell.SetCellValue(Plane_Height);
+                    Area_2DCell.SetCellValue(Area_2D);
+                    Area_3DCell.SetCellValue(Area_3D);
+                    VolumeCell.SetCellValue(Volume);
+
+                }
+
+            }
+        }
+
         public override bool Start()
         {
             GetDamPoint();
             SelectStream();
             GetWatershedPolygon((WatershedLayer as IFeatureLayer).FeatureClass);
             ComputeVolume();
+            ResultOutput();
             return true;
         }
 
