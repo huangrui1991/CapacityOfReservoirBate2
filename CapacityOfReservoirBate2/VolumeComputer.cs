@@ -39,6 +39,7 @@ namespace CapacityOfReservoirBate2
         private String _Base_Z;
         private String _Separation;
         private Double _MinHeight;
+        private Dictionary<int, double> _VolumeDictionary = new Dictionary<int, double>();
 
 
         #region Properties
@@ -406,13 +407,18 @@ namespace CapacityOfReservoirBate2
                 IRaster Raster = GeoDataset as IRaster;
                 IRasterLayer RasterLayer = new RasterLayer();
                 RasterLayer.CreateFromRaster(Raster);
-
+                ArcMap.Document.AddLayer(RasterLayer);
                 IRasterBandCollection RasterBandCol = Raster as IRasterBandCollection;
                 IRasterBand RasterBand = RasterBandCol.Item(0);
                 IRasterStatistics Statistics = RasterBand.Statistics;
                 _MinHeight = Statistics.Minimum;
                 Double Separation = Convert.ToDouble(_Separation);
                 Double Base_Z = Convert.ToDouble(_Base_Z);
+
+
+                
+
+
 
                 while (Base_Z > _MinHeight)
                 {
@@ -431,6 +437,9 @@ namespace CapacityOfReservoirBate2
 
                         GP.Execute(SurfaceVolume, null);
                         ComReleaser.ReleaseCOMObject(GP);
+
+                        double Capability = Volume(Raster, Base_Z);
+                        _VolumeDictionary.Add(Convert.ToInt32(Base_Z), Capability);
                     }
                     Base_Z = Base_Z - Separation;
                     if (Base_Z < _MinHeight)
@@ -450,6 +459,8 @@ namespace CapacityOfReservoirBate2
 
                             GP.Execute(SurfaceVolume, null);
                             ComReleaser.ReleaseCOMObject(GP);
+                            double Capability = Volume(Raster, Base_Z);
+                            _VolumeDictionary.Add(Convert.ToInt32(Base_Z), Capability);
                         }
                     }
                 }
@@ -463,6 +474,46 @@ namespace CapacityOfReservoirBate2
 
         }
 
+
+        private Double Volume(IRaster Raster, Double Base_Z)
+        {
+            Double Volume = 0;
+
+            IRasterProps RasterProps = Raster as IRasterProps;
+
+            double CellX = RasterProps.MeanCellSize().X;
+            double CellY = RasterProps.MeanCellSize().Y;
+
+            IPnt PntSize = new PntClass();
+            PntSize.SetCoords(RasterProps.Width, RasterProps.Height);
+
+            IPixelBlock PixelBlock = Raster.CreatePixelBlock(PntSize);
+
+            IPnt LeftUpPnt = new Pnt();
+            LeftUpPnt.SetCoords(0, 0);
+
+            IRasterBandCollection RstBandCollection = Raster as IRasterBandCollection;
+            IRasterBand RasterBand = RstBandCollection.Item(0);
+            IRawPixels RawPixels = RasterBand as IRawPixels;
+
+            RawPixels.Read(LeftUpPnt, PixelBlock);
+
+            System.Array SafeArray = PixelBlock.get_SafeArray(0) as System.Array;
+
+            for (int y = 0; y < RasterProps.Height; ++y)
+            {
+                for (int x = 0; x < RasterProps.Width; ++x)
+                {
+                    Double DEMValue = Convert.ToDouble(SafeArray.GetValue(x, y));
+                    if (DEMValue > 0 && Base_Z - DEMValue > 0)
+                    {
+                        Volume += (Base_Z - DEMValue) * CellX * CellY;
+                    }
+                }
+            }
+
+            return Volume;
+        }
         private void ResultOutput()
         {
             try
@@ -489,14 +540,12 @@ namespace CapacityOfReservoirBate2
                 int LineIndex = 1;
                 while (Base_Z > RasterMin)
                 {
-                     
-                    String FilePath = WorkSpacePath + @"/" + Base_Z.ToString() + ".txt";
-                    DataRead(FilePath, Table, LineIndex);
+                    DataRead(Base_Z, Table, LineIndex);
 
                     Base_Z = Base_Z - Separation;
                     if (Base_Z < RasterMin)
                     {
-                        DataRead(WorkSpacePath + @"/" + _MinHeight.ToString() + ".txt", Table, LineIndex);
+                        DataRead(Base_Z, Table, LineIndex);
                     }
                     ++LineIndex;
                 }
@@ -504,23 +553,24 @@ namespace CapacityOfReservoirBate2
                 {
                     HSSFWB.Write(Fs);   //向打开的这个xls文件中写入保存。
                 }
-                
+
             }
 
-                
-            
+
+
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
-            
+
 
 
         }
 
 
-        private void DataRead(string FilePath, ISheet Table, int LineIndex)
+        private void DataRead(Double Base_Z, ISheet Table, int LineIndex)
         {
+            String FilePath = WorkSpacePath + @"/" + Base_Z.ToString() + ".txt";
             if (!File.Exists(FilePath))
             {
                 MessageBox.Show("File " + FilePath + " is not exist!");
@@ -567,7 +617,7 @@ namespace CapacityOfReservoirBate2
                     HeightCell.SetCellValue(Plane_Height);
                     Area_2DCell.SetCellValue(Area_2D);
                     Area_3DCell.SetCellValue(Area_3D);
-                    VolumeCell.SetCellValue(Volume);
+                    VolumeCell.SetCellValue(_VolumeDictionary[Convert.ToInt32(Base_Z)].ToString());
 
                 }
 
